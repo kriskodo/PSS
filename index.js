@@ -598,7 +598,8 @@ window.Pontica = {
             setInterval(function () {
                 GM_getValue(['chatRefs'], function (result) {
                     if (result === null) {
-                        GM_setValue({chatRefs: JSON.stringify({})}, function () {})
+                        GM_setValue({chatRefs: JSON.stringify({})}, function () {
+                        })
                     }
                 });
 
@@ -608,7 +609,8 @@ window.Pontica = {
 
                 GM_getValue(['colorCounter'], function (result) {
                     if (result === null) {
-                        GM_setValue({colorCounter: 0}, function () {})
+                        GM_setValue({colorCounter: 0}, function () {
+                        })
                     }
                 });
 
@@ -685,14 +687,16 @@ window.Pontica = {
             if (!GM_getValue(['chatRefs'], function (result) {
                 return result;
             })) {
-                GM_setValue({chatRefs: JSON.stringify({})}, function () {})
+                GM_setValue({chatRefs: JSON.stringify({})}, function () {
+                })
                 // GM_setValue('chatRefs', JSON.stringify({}));
             }
 
             if (!GM_getValue(['chatRefs'], function (result) {
                 return result;
             })) {
-                GM_setValue({colorCounter: 0}, function () {})
+                GM_setValue({colorCounter: 0}, function () {
+                })
                 // GM_setValue('colorCounter', 0);
             }
             if (document != null && $(element).length > 0) {
@@ -725,12 +729,15 @@ window.Pontica = {
                 const channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim()
                 const userID = getUserID()
 
-                GM_setValue({intercom: JSON.stringify({
+                GM_setValue({
+                    intercom: JSON.stringify({
                         channelName: channel_name,
                         channelLink: channel_link,
                         channelId: channel_id,
                         userId: userID
-                    })}, function () {})
+                    })
+                }, function () {
+                })
                 // GM_setValue('intercom', JSON.stringify({
                 //     channelName: channel_name,
                 //     channelLink: channel_link,
@@ -772,7 +779,8 @@ window.Pontica = {
                 forStorage = all_conv.join(",")
             }
 
-            GM_setValue({onGoingChats: forStorage}, function () {})
+            GM_setValue({onGoingChats: forStorage}, function () {
+            })
             // GM_setValue('onGoingChats', forStorage);
         }
 
@@ -899,11 +907,13 @@ window.Pontica = {
 
             if (chatReference && !chatRefs[chatReference] && anyPost()) {
                 chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
-                GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {})
+                GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {
+                })
                 // GM_setValue('chatRefs', JSON.stringify(chatRefs));
             } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
                 if (counter >= chatColors.length) {
-                    GM_setValue({colorCounter: 0}, function () {})
+                    GM_setValue({colorCounter: 0}, function () {
+                    })
                     // GM_setValue('colorCounter', 0);
                 }
 
@@ -913,10 +923,12 @@ window.Pontica = {
                             const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
 
                             chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
-                            GM_setValue({colorCounter: +counter + 1}, function () {})
+                            GM_setValue({colorCounter: +counter + 1}, function () {
+                            })
                             // GM_setValue('colorCounter', +counter + 1);
 
-                            GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {})
+                            GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {
+                            })
                             // GM_setValue('chatRefs', JSON.stringify(chatRefs));
                         }
                     }
@@ -936,19 +948,27 @@ window.Pontica = {
 
             if (specialistChatCount > 0) return;
 
-            GM_setValue({chatRefs: JSON.stringify({})}, function () {})
+            GM_setValue({chatRefs: JSON.stringify({})}, function () {
+            })
             // GM_setValue('chatRefs', JSON.stringify({}));
-            GM_setValue({onGoingChats: '1'}, function () {})
+            GM_setValue({onGoingChats: '1'}, function () {
+            })
             // GM_setValue('onGoingChats', '1');
 
             GM_getValue(['chatRefs'], function (result) {
                 return result;
             }) >= chatColors.length - 1
-                ? GM_setValue({colorCounter: 0}, function () {})
-                : GM_setValue({colorCounter: GM_getValue(['chatRefs'], function (result) {return result;}) + 1}, function () {})
-                // : GM_setValue('colorCounter', GM_getValue(['chatRefs'], function (result) {
-                //     return result;
-                // }) + 1)
+                ? GM_setValue({colorCounter: 0}, function () {
+                })
+                : GM_setValue({
+                    colorCounter: GM_getValue(['chatRefs'], function (result) {
+                        return result;
+                    }) + 1
+                }, function () {
+                })
+            // : GM_setValue('colorCounter', GM_getValue(['chatRefs'], function (result) {
+            //     return result;
+            // }) + 1)
         }
 
         cleanStorage();
