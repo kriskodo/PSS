@@ -534,7 +534,7 @@ window.Pontica = {
             const orderDate = dayjs(orderYear + "-" + orderMonth + "-" + orderDay);
             const now = dayjs();
 
-            if(now.isBefore(orderDate, "day")) {
+            if (now.isBefore(orderDate, "day")) {
                 rowTimingTd.innerHTML = rowTimingTd.innerHTML + " Order for future date";
                 rowTimingTd.style.color = "red";
                 return null;
@@ -562,12 +562,330 @@ window.Pontica = {
             const currentValue = currentHour * 60 * 60 + currentMinutes * 60;
             const dateValue = +hour * 60 * 60 + +minutes.substr(0, minutes.length - 1) * 60;
 
-            if(currentValue - dateValue < 0) {
+            if (currentValue - dateValue < 0) {
                 rowTimingTd.style.color = "red";
                 return null;
             }
 
             rowTimingTd.style.color = "green";
         }
+    },
+    IntercomSlackConnection: function IntercomSlackConnection(GM_getValue, GM_setValue) {
+        /* Set initial values */
+        const baseColor = "#dfecc9";
+        const chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
+        const intercomToSlackMessages = [
+            "We have contacted the client",
+            "We contacted the client",
+            "https://app.slack.com/client/",
+            "Message sent to Just Eat in Slack!",
+            "One moment please, we are going to confirm with the client",
+            "Message sent to client via support-out-client",
+            "Cancellation message sent to Slack!",
+        ]
+
+        GM_getValue('onGoingChats') == null ? GM_setValue('onGoingChats', '1') : null;
+
+        /* Executes in Slack */
+        if (window.location.href.indexOf('slack') !== -1) {
+            setInterval(function () {
+                if (!GM_getValue('chatRefs')) {
+                    GM_setValue('chatRefs', JSON.stringify({}));
+                }
+
+                if (!GM_getValue('colorCounter')) {
+                    GM_setValue('colorCounter', 0);
+                }
+                const searchedMessages = document.getElementsByClassName('c-search_message__body');
+                const channelMessages = document.getElementsByClassName('c-message_kit__text');
+                const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
+                const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
+
+                const chatRefs = JSON.parse(GM_getValue('chatRefs'));
+                const chatReferences = Object.keys(chatRefs);
+                const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
+                const chatDeliveryRequests = Object.values(chatRefs).map(arr => arr[2]);
+
+                crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests)
+            }, 2000);
+
+            /**
+             * Goes through focused Slack tab, scans and colorises recent chats.
+             *
+             * @param {NodeList} allMessages
+             * @param {NodeList} manualChannelMessages
+             * @param {Array} chatReferences
+             * @param {Array} chatRefsColors
+             * @returns {null}
+             */
+            function crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests) {
+                for (let i = 0; i < chatReferences.length; i++) {
+                    const cR = chatReferences[i];
+                    const dR = chatDeliveryRequests[i];
+
+                    for (let j = 0; j < allMessages.length; j++) {
+                        const foundPackageRefAtIndex = allMessages[j].innerHTML.indexOf(cR);
+                        const foundDeliveryReqAtIndex = allMessages[j].innerHTML.indexOf(dR);
+
+                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
+                            allMessages[j].parentNode.parentNode.parentNode.style.backgroundColor = chatRefsColors[i];
+                        }
+                    }
+                    for (let k = 0; k < manualChannelMessages.length; k++) {
+                        const foundPackageRefAtIndex = manualChannelMessages[k].innerHTML.indexOf(cR);
+                        const foundDeliveryReqAtIndex = manualChannelMessages[k].innerHTML.indexOf(dR);
+
+                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
+                            manualChannelMessages[k]
+                                .parentNode
+                                .parentNode
+                                .parentNode
+                                .parentNode
+                                .parentNode
+                                .parentNode
+                                .parentNode
+                                .style.backgroundColor = chatRefsColors[i];
+                        }
+                    }
+                }
+            }
+
+            return;
+        }
+
+        function initialize(element, main_Process) {
+            if (!GM_getValue('chatRefs')) {
+                GM_setValue('chatRefs', JSON.stringify({}));
+            }
+
+            if (!GM_getValue('colorCounter')) {
+                GM_setValue('colorCounter', 0);
+            }
+            if (document != null && $(element).length > 0) {
+                clearInterval(launcher)
+                main_Process()
+            } else {
+                launcher()
+            }
+        }
+
+        var launcher = setInterval(function () {
+            initialize('.nav__link__text__inbox-name', main)
+        }, 2000)
+
+        function main() {
+            const channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)') // Les liens a où se trouves les
+            crawlChannelBoards(channels)
+        }
+
+        function getChannelsBoards() {
+
+            return $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)') // Les liens a où se trouves les
+
+        }
+
+        function crawlChannelBoards(channels) {
+            channels.each((i, el) => {
+                const channel_link = 'https://app.intercom.com/' + $(el).attr('href');
+                const channel_id = channel_link.match(/inbox\/inbox\/(\d{7}|view:486)/)
+                const channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim()
+                const userID = getUserID()
+
+                GM_setValue('intercom', JSON.stringify({
+                    channelName: channel_name,
+                    channelLink: channel_link,
+                    channelId: channel_id,
+                    userId: userID
+                }));
+            })
+
+        }
+
+        function getUserID() {
+            const linkAvatar = '' + $('a.nav__link__inbox-link')[0]
+            const regex_avatar = /(\d{7})/
+            return linkAvatar.match(regex_avatar)[0]
+        }
+
+        function getUrl() {
+            return window.location.href
+        }
+
+        function getConvID() {
+
+            const current_url = getUrl()
+            const regex_conv_id = /conversations\/(\d+)/
+            return current_url.match(regex_conv_id)[1]
+        }
+
+        function storeConvInStorage(new_conv) {
+
+            let forStorage = GM_getValue('onGoingChats');
+            const all_conv = GM_getValue('onGoingChats').split(',');
+
+            if (!all_conv.includes(new_conv)) {
+                all_conv.push(new_conv)
+                forStorage = all_conv.join(",")
+            }
+
+            GM_setValue('onGoingChats', forStorage);
+        }
+
+        function inChannel() {
+
+            const channels = getChannelsBoards()
+            let in_channel = false
+
+            $(channels).each((i, channel) => {
+                window.location.href.includes(channel) ? in_channel = true : null;
+            })
+            return in_channel
+        }
+
+        function anyPost() {
+            let any_post = false
+            $('.ember-view.conversation__stream .o__for-admin a').each((i, e) => {
+                if (e.href.match(/admins\/(\d+)/)[1] === getUserID()) {
+                    any_post = true
+                }
+            })
+            return any_post;
+        }
+
+        function searchForConv() {
+            if (inChannel() && anyPost()) {
+                const new_conv = getConvID()
+                storeConvInStorage(new_conv)
+            }
+        }
+
+        function getMyChats() {
+            const list_chats = $('.inbox__conversation-list-item a')
+            const stored_chats /* string */ = GM_getValue('onGoingChats').split(',');
+            const chatRefs = JSON.parse(GM_getValue('chatRefs'));
+            const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
+            const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
+
+            for (let i = 0; i < list_chats.length; i++) {
+                const currentChat = list_chats[i];
+
+                for (let j = 0; j < chatRefsChatIds.length; j++) {
+                    let regexCheck = "/conversations/" + chatRefsChatIds[j];
+                    let regex = new RegExp(regexCheck, "g");
+
+                    if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
+                        $(currentChat).css('background-color', chatRefsColors[j]);
+                    }
+                }
+            }
+        }
+
+        $(document).on('hashchange keyup mousemove click', function (e) {
+            const launcher2 = setInterval(function () {
+                initialize_color()
+            }, 2000);
+
+            function initialize_color() {
+                const launcher2 = setInterval(function () {
+                    initialize_color()
+                }, 2000);
+
+                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+                    clearInterval(launcher2)
+                    main_2()
+                } else {
+                    launcher2()
+                }
+            }
+        });
+
+
+        $(document).ready(function (e) {
+            const launcher2 = setInterval(function () {
+                initialize_color()
+            }, 2000);
+
+            function initialize_color() {
+
+                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+                    clearInterval(launcher2)
+                    main_2()
+                } else {
+                    launcher2()
+                }
+            }
+        });
+
+        function main_2() {
+            searchForConv()
+            getMyChats()
+            extendedChatHighlighting();
+        }
+
+        function extendedChatHighlighting() {
+            const chatRefs = JSON.parse(GM_getValue('chatRefs'));
+            let counter = GM_getValue('colorCounter');
+            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1].split(' ')[0].split('<br>');
+            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1].split(' ')[0].split('<br>');
+            packageReference = packageReference.length > 0 ? packageReference[0] : null;
+            deliveryRequest = deliveryRequest.length > 0 ? deliveryRequest[0] : null;
+            const openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
+            const openedChatInfoMessages = openedChatInfo.getElementsByTagName('p');
+            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
+            let chatReference;
+
+            if (packageReference) {
+                chatReference = packageReference;
+            } else if (deliveryRequest) {
+                chatReference = deliveryRequest;
+            }
+
+            if (!chatReference) {
+                return;
+            }
+
+            if (chatReference && !chatRefs[chatReference] && anyPost()) {
+                chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
+                GM_setValue('chatRefs', JSON.stringify(chatRefs));
+
+            } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
+                if (counter >= chatColors.length) {
+                    GM_setValue('colorCounter', 0);
+                }
+
+                for (let i = 0; i < openedChatInfoMessages.length; i++) {
+                    for (let j = 0; j < intercomToSlackMessages.length; j++) {
+                        if (openedChatInfoMessages[i].innerHTML.includes(intercomToSlackMessages[j])) {
+                            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
+
+                            chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
+                            GM_setValue('colorCounter', +counter + 1);
+                            GM_setValue('chatRefs', JSON.stringify(chatRefs));
+                        }
+                    }
+                }
+            }
+        }
+
+        function cleanStorage() {
+            const interval = 15 * 60 * 1000; // 15 min interval
+            setInterval(function () {
+                resetValues();
+            }, interval);
+        }
+
+        function resetValues() {
+            const specialistChatCount = +document.getElementsByClassName('submenu__sections__section__items__item__count')[0].innerHTML.trim();
+
+            if (specialistChatCount > 0) return;
+
+            GM_setValue('chatRefs', JSON.stringify({}));
+            GM_setValue('onGoingChats', '1');
+            GM_getValue('colorCounter') >= chatColors.length - 1
+                ? GM_setValue('colorCounter', 0)
+                : GM_setValue('colorCounter', GM_getValue('colorCounter') + 1)
+        }
+
+        cleanStorage();
     }
 }
