@@ -1,4 +1,4 @@
-const Pontica = {
+window.Pontica = {
     BOVehicleModification: function BOVehicleModification() {
         const rowVehicleType = document.getElementsByClassName("row-type")[0];
         const img = rowVehicleType.getElementsByTagName("img")[0];
