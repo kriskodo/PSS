@@ -838,15 +838,7 @@ window.Pontica = {
         }
 
         $(document).on('hashchange keyup mousemove click', function (e) {
-            const launcher2 = setInterval(function () {
-                initialize_color()
-            }, 2000);
-
             function initialize_color() {
-                const launcher2 = setInterval(function () {
-                    initialize_color()
-                }, 2000);
-
                 if (document != null && $('.inbox__conversation-list-item a').length > 0) {
                     clearInterval(launcher2)
                     main_2()
@@ -854,6 +846,10 @@ window.Pontica = {
                     launcher2()
                 }
             }
+
+            var launcher2 = setInterval(function () {
+                initialize_color()
+            }, 2000);
         });
 
 
