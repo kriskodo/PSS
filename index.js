@@ -796,13 +796,11 @@ window.Pontica = {
             let forStorage = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
             });
-            const all_conv = chromeStorage.sync.get(['onGoingChats'], function (result) {
-                return result;
-            })?.split(',');
+            const all_conv = forStorage?.split(",") || [];
 
             if (!all_conv?.includes(new_conv)) {
-                all_conv.push(new_conv)
-                forStorage = all_conv.join(",")
+                all_conv?.push(new_conv)
+                forStorage = all_conv?.join(",")
             }
 
             chromeStorage.sync.set({onGoingChats: forStorage}, function () {
