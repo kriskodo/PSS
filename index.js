@@ -859,10 +859,6 @@ window.Pontica = {
 
 
         $(document).ready(function (e) {
-            const launcher2 = setInterval(function () {
-                initialize_color()
-            }, 2000);
-
             function initialize_color() {
 
                 if (document != null && $('.inbox__conversation-list-item a').length > 0) {
@@ -872,6 +868,10 @@ window.Pontica = {
                     launcher2()
                 }
             }
+
+            var launcher2 = setInterval(function () {
+                initialize_color()
+            }, 2000);
         });
 
         function main_2() {
