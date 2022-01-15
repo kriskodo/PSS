@@ -588,6 +588,9 @@ window.Pontica = {
             if (result === null) {
                 chromeStorage.sync.set({onGoingChats: '1'}, function () {
                 })
+            } else {
+                chromeStorage.sync.set({onGoingChats: null}, function () {
+                })
             }
         });
 
@@ -772,7 +775,9 @@ window.Pontica = {
             });
             const all_conv = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
-            }).split(',');
+            })?.split(',');
+
+            console.log(all_conv);
 
             if (!all_conv.includes(new_conv)) {
                 all_conv.push(new_conv)
