@@ -800,9 +800,7 @@ window.Pontica = {
                 return result;
             })?.split(',');
 
-            console.log(all_conv);
-
-            if (!all_conv.includes(new_conv)) {
+            if (!all_conv?.includes(new_conv)) {
                 all_conv.push(new_conv)
                 forStorage = all_conv.join(",")
             }
