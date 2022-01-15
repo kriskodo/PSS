@@ -706,17 +706,40 @@ window.Pontica = {
                 clearInterval(launcher)
                 main_Process()
             } else {
-                launcher()
+                launcher = setInterval(function () {
+                    initialize('.nav__link__text__inbox-name', main)
+                }, 2000);
             }
+        }
+
+        function main() {
+            const channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)') // Les liens a où se trouves les
+            crawlChannelBoards(channels)
+        }
+
+        function main_2() {
+            searchForConv()
+            getMyChats()
+            extendedChatHighlighting();
         }
 
         var launcher = setInterval(function () {
             initialize('.nav__link__text__inbox-name', main)
         }, 2000)
 
-        function main() {
-            const channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)') // Les liens a où se trouves les
-            crawlChannelBoards(channels)
+        var launcher2 = setInterval(function () {
+            initialize_color()
+        }, 2000);
+
+        function initialize_color() {
+            if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+                clearInterval(launcher2)
+                main_2()
+            } else {
+                launcher2 = setInterval(function () {
+                    initialize_color()
+                }, 2000);
+            }
         }
 
         function getChannelsBoards() {
@@ -843,42 +866,17 @@ window.Pontica = {
         }
 
         $(document).on('hashchange keyup mousemove click', function (e) {
-            function initialize_color() {
-                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-                    clearInterval(launcher2)
-                    main_2()
-                } else {
-                    launcher2()
-                }
-            }
-
-            var launcher2 = setInterval(function () {
+            launcher2 = setInterval(function () {
                 initialize_color()
             }, 2000);
         });
 
 
         $(document).ready(function (e) {
-            function initialize_color() {
-
-                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-                    clearInterval(launcher2)
-                    main_2()
-                } else {
-                    launcher2()
-                }
-            }
-
-            var launcher2 = setInterval(function () {
+            launcher2 = setInterval(function () {
                 initialize_color()
             }, 2000);
         });
-
-        function main_2() {
-            searchForConv()
-            getMyChats()
-            extendedChatHighlighting();
-        }
 
         function extendedChatHighlighting() {
             const chatRefs = JSON.parse(chromeStorage.sync.get(['chatRefs'], function (result) {
