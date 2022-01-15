@@ -812,7 +812,7 @@ window.Pontica = {
 
             stored_chats = !!stored_chats?.split(",") ? stored_chats?.split(",") : "";
 
-            let chatRefs;
+            let chatRefs = {};
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
                 if (!obj['chatRefs']) {
@@ -853,16 +853,14 @@ window.Pontica = {
         });
 
         function extendedChatHighlighting() {
-            let chatRefs;
+            let chatRefs = {};
             let counter;
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
-                if (!obj['chatRefs']) {
-                    chatRefs = {};
-                } else {
+                if (obj['chatRefs']) {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
-            });
+            })
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
                 counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
