@@ -584,6 +584,10 @@ window.Pontica = {
             "Cancellation message sent to Slack!",
         ]
 
+        GM_setValue({chatRefs: JSON.stringify({})}, function () {})
+        GM_setValue({onGoingChats: '1'}, function () {})
+        GM_setValue({colorCounter: 0}, function() {})
+
         GM_getValue(['onGoingChats'], function (result) {
             if (result === null) {
                 GM_setValue({onGoingChats: '1'}, function () {
@@ -955,13 +959,13 @@ window.Pontica = {
             })
             // GM_setValue('onGoingChats', '1');
 
-            GM_getValue(['chatRefs'], function (result) {
+            GM_getValue(['colorCounter'], function (result) {
                 return result;
             }) >= chatColors.length - 1
                 ? GM_setValue({colorCounter: 0}, function () {
                 })
                 : GM_setValue({
-                    colorCounter: GM_getValue(['chatRefs'], function (result) {
+                    colorCounter: GM_getValue(['colorCounter'], function (result) {
                         return result;
                     }) + 1
                 }, function () {
