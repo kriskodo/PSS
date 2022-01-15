@@ -838,9 +838,10 @@ window.Pontica = {
 
         function getMyChats() {
             const list_chats = $('.inbox__conversation-list-item a')
-            const stored_chats /* string */ = chromeStorage.sync.get(['onGoingChats'], function (result) {
+            let stored_chats = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
-            }).split(',');
+            });
+            stored_chats = !!stored_chats?.split(",") ? stored_chats?.split(",") : "";
             const chatRefs = JSON.parse(chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             }));
