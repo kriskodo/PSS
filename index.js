@@ -570,7 +570,7 @@ window.Pontica = {
             rowTimingTd.style.color = "green";
         }
     },
-    IntercomSlackConnection: function IntercomSlackConnection(GM_getValue, GM_setValue) {
+    IntercomSlackConnection: function IntercomSlackConnection(chromeStorage) {
         /* Set initial values */
         const baseColor = "#dfecc9";
         const chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
@@ -582,15 +582,11 @@ window.Pontica = {
             "One moment please, we are going to confirm with the client",
             "Message sent to client via support-out-client",
             "Cancellation message sent to Slack!",
-        ]
+        ];
 
-        GM_setValue({chatRefs: JSON.stringify({})}, function () {})
-        GM_setValue({onGoingChats: '1'}, function () {})
-        GM_setValue({colorCounter: 0}, function() {})
-
-        GM_getValue(['onGoingChats'], function (result) {
+        chromeStorage.sync.get(['onGoingChats'], function (result) {
             if (result === null) {
-                GM_setValue({onGoingChats: '1'}, function () {
+                chromeStorage.sync.set({onGoingChats: '1'}, function () {
                 })
             }
         });
@@ -600,9 +596,9 @@ window.Pontica = {
         /* Executes in Slack */
         if (window.location.href.indexOf('slack') !== -1) {
             setInterval(function () {
-                GM_getValue(['chatRefs'], function (result) {
+                chromeStorage.sync.get(['chatRefs'], function (result) {
                     if (result === null) {
-                        GM_setValue({chatRefs: JSON.stringify({})}, function () {
+                        chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
                         })
                     }
                 });
@@ -611,9 +607,9 @@ window.Pontica = {
                 //     GM_setValue('chatRefs', JSON.stringify({}));
                 // }
 
-                GM_getValue(['colorCounter'], function (result) {
+                chromeStorage.sync.get(['colorCounter'], function (result) {
                     if (result === null) {
-                        GM_setValue({colorCounter: 0}, function () {
+                        chromeStorage.sync.set({colorCounter: 0}, function () {
                         })
                     }
                 });
@@ -627,7 +623,7 @@ window.Pontica = {
                 const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
                 const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
 
-                GM_getValue(['colorCounter'], function (result) {
+                chromeStorage.sync.get(['colorCounter'], function (result) {
                     return result;
                 });
 
@@ -688,18 +684,18 @@ window.Pontica = {
         }
 
         function initialize(element, main_Process) {
-            if (!GM_getValue(['chatRefs'], function (result) {
+            if (!chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             })) {
-                GM_setValue({chatRefs: JSON.stringify({})}, function () {
+                chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
                 })
                 // GM_setValue('chatRefs', JSON.stringify({}));
             }
 
-            if (!GM_getValue(['chatRefs'], function (result) {
+            if (!chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             })) {
-                GM_setValue({colorCounter: 0}, function () {
+                chromeStorage.sync.set({colorCounter: 0}, function () {
                 })
                 // GM_setValue('colorCounter', 0);
             }
@@ -733,7 +729,7 @@ window.Pontica = {
                 const channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim()
                 const userID = getUserID()
 
-                GM_setValue({
+                chromeStorage.sync.set({
                     intercom: JSON.stringify({
                         channelName: channel_name,
                         channelLink: channel_link,
@@ -771,10 +767,10 @@ window.Pontica = {
 
         function storeConvInStorage(new_conv) {
 
-            let forStorage = GM_getValue(['onGoingChats'], function (result) {
+            let forStorage = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
             });
-            const all_conv = GM_getValue(['onGoingChats'], function (result) {
+            const all_conv = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
             }).split(',');
 
@@ -783,7 +779,7 @@ window.Pontica = {
                 forStorage = all_conv.join(",")
             }
 
-            GM_setValue({onGoingChats: forStorage}, function () {
+            chromeStorage.sync.set({onGoingChats: forStorage}, function () {
             })
             // GM_setValue('onGoingChats', forStorage);
         }
@@ -818,10 +814,10 @@ window.Pontica = {
 
         function getMyChats() {
             const list_chats = $('.inbox__conversation-list-item a')
-            const stored_chats /* string */ = GM_getValue(['onGoingChats'], function (result) {
+            const stored_chats /* string */ = chromeStorage.sync.get(['onGoingChats'], function (result) {
                 return result;
             }).split(',');
-            const chatRefs = JSON.parse(GM_getValue(['chatRefs'], function (result) {
+            const chatRefs = JSON.parse(chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             }));
             const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
@@ -884,10 +880,10 @@ window.Pontica = {
         }
 
         function extendedChatHighlighting() {
-            const chatRefs = JSON.parse(GM_getValue(['chatRefs'], function (result) {
+            const chatRefs = JSON.parse(chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             }));
-            let counter = GM_getValue(['chatRefs'], function (result) {
+            let counter = chromeStorage.sync.get(['chatRefs'], function (result) {
                 return result;
             });
             let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1].split(' ')[0].split('<br>');
@@ -911,12 +907,12 @@ window.Pontica = {
 
             if (chatReference && !chatRefs[chatReference] && anyPost()) {
                 chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
-                GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {
+                chromeStorage.sync.set({chatRefs: JSON.stringify(chatRefs)}, function () {
                 })
                 // GM_setValue('chatRefs', JSON.stringify(chatRefs));
             } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
                 if (counter >= chatColors.length) {
-                    GM_setValue({colorCounter: 0}, function () {
+                    chromeStorage.sync.set({colorCounter: 0}, function () {
                     })
                     // GM_setValue('colorCounter', 0);
                 }
@@ -927,11 +923,11 @@ window.Pontica = {
                             const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
 
                             chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
-                            GM_setValue({colorCounter: +counter + 1}, function () {
+                            chromeStorage.sync.set({colorCounter: +counter + 1}, function () {
                             })
                             // GM_setValue('colorCounter', +counter + 1);
 
-                            GM_setValue({chatRefs: JSON.stringify(chatRefs)}, function () {
+                            chromeStorage.sync.set({chatRefs: JSON.stringify(chatRefs)}, function () {
                             })
                             // GM_setValue('chatRefs', JSON.stringify(chatRefs));
                         }
@@ -952,20 +948,20 @@ window.Pontica = {
 
             if (specialistChatCount > 0) return;
 
-            GM_setValue({chatRefs: JSON.stringify({})}, function () {
+            chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
             })
             // GM_setValue('chatRefs', JSON.stringify({}));
-            GM_setValue({onGoingChats: '1'}, function () {
+            chromeStorage.sync.set({onGoingChats: '1'}, function () {
             })
             // GM_setValue('onGoingChats', '1');
 
-            GM_getValue(['colorCounter'], function (result) {
+            chromeStorage.sync.get(['colorCounter'], function (result) {
                 return result;
             }) >= chatColors.length - 1
-                ? GM_setValue({colorCounter: 0}, function () {
+                ? chromeStorage.sync.set({colorCounter: 0}, function () {
                 })
-                : GM_setValue({
-                    colorCounter: GM_getValue(['colorCounter'], function (result) {
+                : chromeStorage.sync.set({
+                    colorCounter: chromeStorage.sync.get(['colorCounter'], function (result) {
                         return result;
                     }) + 1
                 }, function () {
