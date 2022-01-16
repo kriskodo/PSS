@@ -607,16 +607,16 @@ window.Pontica = {
                 const channelMessages = document.getElementsByClassName('c-message_kit__text');
                 const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
                 const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
-                let chatRefs;
+                let chatRefs = {};
 
                 chromeStorage.sync.get(['chatRefs'], function (obj) {
                     if (!obj['chatRefs']) {
                         chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
-                            chatRefs = JSON.stringify({});
+                            chatRefs = {};
                         });
                     } else {
                         chromeStorage.sync.set({chatRefs: obj['chatRefs']}, function () {
-                            chatRefs = obj['chatRefs'];
+                            chatRefs = JSON.parse(obj['chatRefs']);
                         });
                     }
                 })
@@ -812,12 +812,10 @@ window.Pontica = {
 
             stored_chats = !!stored_chats?.split(",") ? stored_chats?.split(",") : "";
 
-            let chatRefs;
+            let chatRefs = {};
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
-                if (!obj['chatRefs']) {
-                    chatRefs = {};
-                } else {
+                if (Object.values(obj['chatRefs'])?.length > 0) {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
             });
@@ -853,13 +851,11 @@ window.Pontica = {
         });
 
         function extendedChatHighlighting() {
-            let chatRefs;
+            let chatRefs = {};
             let counter;
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
-                if (!obj['chatRefs']) {
-                    chatRefs = {};
-                } else {
+                if (Object.values(obj['chatRefs'])?.length > 0) {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
             });
