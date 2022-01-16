@@ -864,7 +864,7 @@ window.Pontica = {
                 }
             })
 
-            chromeStorage.sync.get(['chatRefs'], function (obj) {
+            chromeStorage.sync.get(['colorCounter'], function (obj) {
                 counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
             });
 
