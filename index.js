@@ -871,8 +871,10 @@ window.Pontica = {
             let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1];
             let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1];
 
-            packageReference = packageReference.split(' ')[0].split('<br>');
-            deliveryRequest = deliveryRequest.split(' ')[0].split('<br>');
+            packageReference = packageReference.split(' ')[0];
+            packageReference = packageReference.split('<br>');
+            deliveryRequest = deliveryRequest.split(' ')[0];
+            deliveryRequest = deliveryRequest.split('<br>');
 
             packageReference = packageReference.length > 0 ? packageReference[0] : null;
             deliveryRequest = deliveryRequest.length > 0 ? deliveryRequest[0] : null;
