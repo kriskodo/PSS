@@ -570,11 +570,11 @@ window.Pontica = {
         const chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
         const intercomToSlackMessages = ["We have contacted the client", "We contacted the client", "https://app.slack.com/client/", "Message sent to Just Eat in Slack!", "One moment please, we are going to confirm with the client", "Message sent to client via support-out-client", "Cancellation message sent to Slack!",];
 
-        chromeStorage.sync.get(['onGoingChats'], function (obj) {
+        chromeStorage.local.get(['onGoingChats'], function (obj) {
             if (obj['onGoingChats'] === null) {
-                chromeStorage.sync.set({onGoingChats: '1'})
+                chromeStorage.local.set({onGoingChats: '1'})
             } else {
-                chromeStorage.sync.set({onGoingChats: null});
+                chromeStorage.local.set({onGoingChats: null});
             }
         })
 
@@ -583,9 +583,9 @@ window.Pontica = {
         /* Executes in Slack */
         if (window.location.href.indexOf('slack') !== -1) {
             setInterval(function () {
-                chromeStorage.sync.get(['chatRefs'], function (obj) {
+                chromeStorage.local.get(['chatRefs'], function (obj) {
                     if (!obj['chatRefs']) {
-                        chromeStorage.sync.set({chatRefs: JSON.stringify({})})
+                        chromeStorage.local.set({chatRefs: JSON.stringify({})})
                     }
                 });
 
@@ -593,9 +593,9 @@ window.Pontica = {
                 //     GM_setValue('chatRefs', JSON.stringify({}));
                 // }
 
-                chromeStorage.sync.get(['colorCounter'], function (obj) {
+                chromeStorage.local.get(['colorCounter'], function (obj) {
                     if (!obj['colorCounter']) {
-                        chromeStorage.sync.set({colorCounter: 0})
+                        chromeStorage.local.set({colorCounter: 0})
                     }
                 });
 
@@ -609,13 +609,13 @@ window.Pontica = {
                 const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
                 let chatRefs;
 
-                chromeStorage.sync.get(['chatRefs'], function (obj) {
+                chromeStorage.local.get(['chatRefs'], function (obj) {
                     if (!obj['chatRefs']) {
-                        chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
+                        chromeStorage.local.set({chatRefs: JSON.stringify({})}, function () {
                             chatRefs = JSON.stringify({});
                         });
                     } else {
-                        chromeStorage.sync.set({chatRefs: obj['chatRefs']}, function () {
+                        chromeStorage.local.set({chatRefs: obj['chatRefs']}, function () {
                             chatRefs = obj['chatRefs'];
                         });
                     }
@@ -668,9 +668,9 @@ window.Pontica = {
 
         function initialize(element, main_Process) {
 
-            chromeStorage.sync.set({chatRefs: JSON.stringify({})})
+            chromeStorage.local.set({chatRefs: JSON.stringify({})})
             // GM_setValue('chatRefs', JSON.stringify({}));
-            chromeStorage.sync.set({colorCounter: 0})
+            chromeStorage.local.set({colorCounter: 0})
             // GM_setValue('colorCounter', 0);
             if (document != null && $(element).length > 0) {
                 clearInterval(launcher)
@@ -725,7 +725,7 @@ window.Pontica = {
                 const channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim()
                 const userID = getUserID()
 
-                chromeStorage.sync.set({
+                chromeStorage.local.set({
                     intercom: JSON.stringify({
                         channelName: channel_name, channelLink: channel_link, channelId: channel_id, userId: userID
                     })
@@ -760,7 +760,7 @@ window.Pontica = {
         function storeConvInStorage(new_conv) {
             let forStorage;
 
-            chromeStorage.sync.get(['onGoingChats'], function (obj) {
+            chromeStorage.local.get(['onGoingChats'], function (obj) {
                 forStorage = obj['onGoingChats'];
             });
 
@@ -771,7 +771,7 @@ window.Pontica = {
                 forStorage = all_conv?.join(",")
             }
 
-            chromeStorage.sync.set({onGoingChats: forStorage});
+            chromeStorage.local.set({onGoingChats: forStorage});
             // GM_setValue('onGoingChats', forStorage);
         }
 
@@ -806,7 +806,7 @@ window.Pontica = {
             const list_chats = $('.inbox__conversation-list-item a')
             let stored_chats;
 
-            chromeStorage.sync.get(['onGoingChats'], function (obj) {
+            chromeStorage.local.get(['onGoingChats'], function (obj) {
                 stored_chats = obj['onGoingChats'];
             });
 
@@ -814,7 +814,7 @@ window.Pontica = {
 
             let chatRefs = {};
 
-            chromeStorage.sync.get(['chatRefs'], function (obj) {
+            chromeStorage.local.get(['chatRefs'], function (obj) {
                 if (!obj['chatRefs']) {
                     chatRefs = {};
                 } else {
@@ -858,13 +858,13 @@ window.Pontica = {
             let chatRefs = {};
             let counter;
 
-            chromeStorage.sync.get(['chatRefs'], function (obj) {
+            chromeStorage.local.get(['chatRefs'], function (obj) {
                 if (obj['chatRefs']) {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
             })
 
-            chromeStorage.sync.get(['colorCounter'], function (obj) {
+            chromeStorage.local.get(['colorCounter'], function (obj) {
                 counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
             });
 
@@ -889,11 +889,11 @@ window.Pontica = {
 
             if (chatReference && !chatRefs[chatReference] && anyPost()) {
                 chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
-                chromeStorage.sync.set({chatRefs: JSON.stringify(chatRefs)})
+                chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)})
                 // GM_setValue('chatRefs', JSON.stringify(chatRefs));
             } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
                 if (counter >= chatColors.length) {
-                    chromeStorage.sync.set({colorCounter: 0})
+                    chromeStorage.local.set({colorCounter: 0})
                     // GM_setValue('colorCounter', 0);
                 }
 
@@ -903,10 +903,10 @@ window.Pontica = {
                             const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
 
                             chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
-                            chromeStorage.sync.set({colorCounter: +counter + 1});
+                            chromeStorage.local.set({colorCounter: +counter + 1});
                             // GM_setValue('colorCounter', +counter + 1);
 
-                            chromeStorage.sync.set({chatRefs: JSON.stringify(chatRefs)});
+                            chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
                             // GM_setValue('chatRefs', JSON.stringify(chatRefs));
                         }
                     }
@@ -926,19 +926,19 @@ window.Pontica = {
 
             if (specialistChatCount > 0) return;
 
-            chromeStorage.sync.get(['colorCounter'], function (obj) {
+            chromeStorage.local.get(['colorCounter'], function (obj) {
                 let counter = obj['colorCounter'];
 
                 if (counter === chatColors.length - 1) {
-                    chromeStorage.sync.set({colorCounter: 0});
+                    chromeStorage.local.set({colorCounter: 0});
                 } else {
-                    chromeStorage.sync.set({colorCounter: counter + 1});
+                    chromeStorage.local.set({colorCounter: counter + 1});
                 }
             })
 
-            chromeStorage.sync.set({chatRefs: JSON.stringify({})});
+            chromeStorage.local.set({chatRefs: JSON.stringify({})});
             // GM_setValue('chatRefs', JSON.stringify({}));
-            chromeStorage.sync.set({onGoingChats: '1'});
+            chromeStorage.local.set({onGoingChats: '1'});
             // GM_setValue('onGoingChats', '1');
         }
 
