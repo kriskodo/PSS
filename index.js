@@ -607,16 +607,16 @@ window.Pontica = {
                 const channelMessages = document.getElementsByClassName('c-message_kit__text');
                 const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
                 const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
-                let chatRefs = {};
+                let chatRefs;
 
                 chromeStorage.sync.get(['chatRefs'], function (obj) {
                     if (!obj['chatRefs']) {
                         chromeStorage.sync.set({chatRefs: JSON.stringify({})}, function () {
-                            chatRefs = {};
+                            chatRefs = JSON.stringify({});
                         });
                     } else {
                         chromeStorage.sync.set({chatRefs: obj['chatRefs']}, function () {
-                            chatRefs = JSON.parse(obj['chatRefs']);
+                            chatRefs = obj['chatRefs'];
                         });
                     }
                 })
@@ -815,10 +815,14 @@ window.Pontica = {
             let chatRefs = {};
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
-                if (Object.values(obj['chatRefs'])?.length > 0) {
+                if (!obj['chatRefs']) {
+                    chatRefs = {};
+                } else {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
             });
+
+            if (!chatRefs) return;
 
             const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
             const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
@@ -855,17 +859,17 @@ window.Pontica = {
             let counter;
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
-                if (Object.values(obj['chatRefs'])?.length > 0) {
+                if (obj['chatRefs']) {
                     chatRefs = JSON.parse(obj['chatRefs']);
                 }
-            });
+            })
 
             chromeStorage.sync.get(['chatRefs'], function (obj) {
                 counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
             });
 
-            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1].split(' ')[0].split('<br>');
-            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1].split(' ')[0].split('<br>');
+            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
+            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
             packageReference = packageReference.length > 0 ? packageReference[0] : null;
             deliveryRequest = deliveryRequest.length > 0 ? deliveryRequest[0] : null;
             const openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
