@@ -868,10 +868,10 @@ window.Pontica = {
                 counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
             });
 
-            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
-            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
-            packageReference = packageReference.length > 0 ? packageReference[0] : null;
-            deliveryRequest = deliveryRequest.length > 0 ? deliveryRequest[0] : null;
+            let packageReferenceIndicator = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
+            let deliveryRequestIndicator = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
+            let packageReference = packageReferenceIndicator.length > 0 ? packageReferenceIndicator[0] : null;
+            let deliveryRequest = deliveryRequestIndicator.length > 0 ? deliveryRequestIndicator[0] : null;
             const openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
             const openedChatInfoMessages = openedChatInfo.getElementsByTagName('p');
             const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
