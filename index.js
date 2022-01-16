@@ -864,8 +864,8 @@ window.Pontica = {
                 }
             })
 
-            chromeStorage.local.get(['colorCounter'], function (obj) {
-                counter = obj["colorCounter"] ? obj["colorCounter"] : 0;
+            chromeStorage.local.get(['colorCounter'], async function (obj) {
+                counter = await obj["colorCounter"] ? obj["colorCounter"] : 0;
             });
 
             let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1];
