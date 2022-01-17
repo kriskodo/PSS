@@ -796,6 +796,7 @@ window.Pontica = {
 												let regexCheck = "/conversations/" + chatRefsChatIds[j];
 												let regex = new RegExp(regexCheck, "g");
 												
+												console.log("stop pls")
 												if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
 														$(currentChat).css('background-color', chatRefsColors[j]);
 												}
