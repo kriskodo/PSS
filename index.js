@@ -779,6 +779,8 @@ window.Pontica = {
 								const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
 								const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
 								
+								console.log(items);
+								
 								for (let i = 0; i < list_chats.length; i++) {
 										const currentChat = list_chats[i];
 										
@@ -837,6 +839,7 @@ window.Pontica = {
 						}
 						
 						function extendedChatHighlighting() {
+								console.log(items);
 								const chatRefs = JSON.parse(items.chatRefs);
 								let counter = items.colorCounter;
 								let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1].split(' ')[0].split('<br>');
