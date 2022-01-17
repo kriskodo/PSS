@@ -773,7 +773,6 @@ window.Pontica = {
 						}
 						
 						function getMyChats() {
-								console.log(items);
 								var list_chats = $('.inbox__conversation-list-item a');
 								var stored_chats = items.onGoingChats.split(',');
 								const chatRefs = JSON.parse(items.chatRefs);
@@ -794,7 +793,7 @@ window.Pontica = {
 								}
 						}
 						
-						$(document).on('hashchange mousemove keyup click', function () {
+						setInterval(() => {
 								chromeStorage.local.get(null, function(updatedItems) {
 										items = updatedItems;
 								});
@@ -814,8 +813,7 @@ window.Pontica = {
 								var launcher2 = setInterval(function () {
 										initialize_color();
 								}, 2000);
-						});
-						
+						}, 1000)
 						
 						$(document).ready(function (e) {
 								function initialize_color() {
