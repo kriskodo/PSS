@@ -579,7 +579,7 @@ window.Pontica = {
 								"Cancellation message sent to Slack!",
 						];
 						
-						items.onGoingChats == null ? chromeStorage.local.set({ onGoingChats: "1" }) : null;
+						items.onGoingChats == null ? chromeStorage.local.set({ onGoingChats: "" }) : null;
 						
 						/* Executes in Slack */
 						if (window.location.href.indexOf('slack') !== -1) {
@@ -904,7 +904,7 @@ window.Pontica = {
 								if (specialistChatCount > 0) return;
 								
 								chromeStorage.local.set({chatRefs: JSON.stringify({})})
-								chromeStorage.local.set({onGoingChats: "1"})
+								chromeStorage.local.set({onGoingChats: ""})
 								if(items.colorCounter >= chatColors.length - 1) {
 										chromeStorage.local.set({colorCounter: 0})
 								} else {
