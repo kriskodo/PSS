@@ -667,7 +667,7 @@ window.Pontica = {
 								}
 						}
 						
-						var launcher = setInterval(function () {
+						var launcher = () => setInterval(function () {
 								initialize('.nav__link__text__inbox-name', main);
 						}, 2000);
 						
@@ -796,14 +796,14 @@ window.Pontica = {
 						$(document).on('hashchange keyup click', function (e) {
 								function initialize_color() {
 										if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-												clearInterval(launcher2);
+												clearInterval(launcher2());
 												main_2();
 										} else {
 												launcher2();
 										}
 								}
 								
-								var launcher2 = setInterval(function () {
+								var launcher2 = () => setInterval(function () {
 										initialize_color();
 								}, 2000);
 						});
@@ -812,14 +812,14 @@ window.Pontica = {
 						$(document).ready(function (e) {
 								function initialize_color() {
 										if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-												clearInterval(launcher2);
+												clearInterval(launcher2());
 												main_2();
 										} else {
 												launcher2();
 										}
 								}
 								
-								var launcher2 = setInterval(function () {
+								var launcher2 = () => setInterval(function () {
 										initialize_color();
 								}, 2000);
 						});
