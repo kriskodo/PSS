@@ -843,7 +843,7 @@ window.Pontica = {
 						
 						function extendedChatHighlighting() {
 								console.log(items);
-								const chatRefs = JSON.parse(items.chatRefs);
+								const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({});
 								let counter = items.colorCounter;
 								let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
 								let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
