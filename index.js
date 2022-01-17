@@ -580,7 +580,8 @@ window.Pontica = {
 						];
 						
 						items.onGoingChats === undefined ? chromeStorage.local.set({ onGoingChats: "" }) : null;
-						items.colorCounter === undefined ? chromeStorage.local.set({ colorCounter: 0 })
+						items.colorCounter === undefined ? chromeStorage.local.set({ colorCounter: 0 }) : null;
+						
 						/* Executes in Slack */
 						if (window.location.href.indexOf('slack') !== -1) {
 								setInterval(function () {
