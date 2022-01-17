@@ -794,7 +794,11 @@ window.Pontica = {
 								}
 						}
 						
-						$(document).on('hashchange keyup click', function (e) {
+						$(document).on('hashchange keyup click', function () {
+								chromeStorage.local.get(null, function(updatedItems) {
+										items = updatedItems;
+								});
+								
 								function initialize_color() {
 										if (document != null && $('.inbox__conversation-list-item a').length > 0) {
 												clearInterval(launcher2);
