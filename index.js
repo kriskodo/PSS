@@ -871,6 +871,7 @@ window.Pontica = {
             let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1];
             let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1];
 
+            console.log(packageReference)
             packageReference = packageReference.split(' ')[0];
             packageReference = packageReference.split('<br>');
             deliveryRequest = deliveryRequest.split(' ')[0];
