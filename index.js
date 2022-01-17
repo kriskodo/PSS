@@ -579,8 +579,8 @@ window.Pontica = {
 								"Cancellation message sent to Slack!",
 						];
 						
-						items.onGoingChats == null ? chromeStorage.local.set({ onGoingChats: "" }) : null;
-						
+						items.onGoingChats === undefined ? chromeStorage.local.set({ onGoingChats: "" }) : null;
+						items.colorCounter === undefined ? chromeStorage.local.set({ colorCounter: 0 })
 						/* Executes in Slack */
 						if (window.location.href.indexOf('slack') !== -1) {
 								setInterval(function () {
