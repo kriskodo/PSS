@@ -736,7 +736,6 @@ window.Pontica = {
 						
 						function storeConvInStorage(new_conv) {
 								var forStorage = items.onGoingChats;
-								if (!forStorage) return;
 								
 								var all_conv = items.onGoingChats.toString().split(',');
 								
