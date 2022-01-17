@@ -807,7 +807,7 @@ window.Pontica = {
             let stored_chats;
 
             chromeStorage.local.get(['onGoingChats'], async function (obj) {
-                stored_chats = obj['onGoingChats'];
+                await stored_chats = obj['onGoingChats'];
             });
 
             stored_chats = !!stored_chats?.split(",") ? stored_chats?.split(",") : "";
