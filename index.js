@@ -794,7 +794,7 @@ window.Pontica = {
 								}
 						}
 						
-						$(document).on('hashchange keyup click', function () {
+						$(document).on('hashchange mousemove keyup click', function () {
 								chromeStorage.local.get(null, function(updatedItems) {
 										items = updatedItems;
 								});
