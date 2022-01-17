@@ -841,7 +841,7 @@ window.Pontica = {
             }
         }
 
-        $(document).on('hashchange keyup mousemove click', function (e) {
+        $(document).on('hashchange keyup click', function (e) {
             launcher2 = setInterval(function () {
                 initialize_color()
             }, 2000);
