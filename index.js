@@ -810,7 +810,7 @@ window.Pontica = {
                 stored_chats = await obj['onGoingChats'];
             });
 
-            stored_chats = !!stored_chats?.split(",") ? stored_chats?.split(",") : "";
+            stored_chats = stored_chats?.split(",");
 
             let chatRefs = {};
 
