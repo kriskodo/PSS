@@ -806,7 +806,7 @@ window.Pontica = {
             const list_chats = $('.inbox__conversation-list-item a')
             let stored_chats;
 
-            chromeStorage.local.get(['onGoingChats'], function (obj) {
+            chromeStorage.local.get(['onGoingChats'], async function (obj) {
                 stored_chats = obj['onGoingChats'];
             });
 
