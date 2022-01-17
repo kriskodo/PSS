@@ -776,7 +776,7 @@ window.Pontica = {
 								console.log(items);
 								var list_chats = $('.inbox__conversation-list-item a');
 								var stored_chats = items.onGoingChats.split(',');
-								const chatRefs = JSON.parse(items.onGoingChats);
+								const chatRefs = JSON.parse(items.chatRefs);
 								const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
 								const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
 								
