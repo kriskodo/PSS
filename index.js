@@ -21,7 +21,357 @@ window.Pontica = {
                 MASidebarMod();
             }
             if (window.location.href.includes("https://app.slack.com/client") || window.location.href.includes("https://app.intercom.com/a/apps")) {
-                IntercomSlackConnection(chromeStorage);
+                (function IntercomSlackConnection() {
+                    chromeStorage.local.get(null, function (items) {
+                        /* Set initial values */
+                        const baseColor = "#dfecc9";
+                        const chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
+                        const intercomToSlackMessages = [
+                            "We have contacted the client",
+                            "We contacted the client",
+                            "https://app.slack.com/client/",
+                            "Message sent to Just Eat in Slack!",
+                            "One moment please, we are going to confirm with the client",
+                            "Message sent to client via support-out-client",
+                            "Cancellation message sent to Slack!",
+                        ];
+
+                        items.onGoingChats === undefined ? chromeStorage.local.set({onGoingChats: "1"}) : null;
+                        items.colorCounter === undefined ? chromeStorage.local.set({colorCounter: 0}) : null;
+
+                        /* Executes in Slack */
+                        if (window.location.href.indexOf('slack') !== -1) {
+                            setInterval(function () {
+                                if (!items.chatRefs) {
+                                    chromeStorage.local.set({chatRefs: JSON.stringify({})});
+                                }
+
+                                if (!items.colorCounter) {
+                                    chromeStorage.local.set({colorCounter: 0});
+                                }
+
+                                const searchedMessages = document.getElementsByClassName('c-search_message__body');
+                                const channelMessages = document.getElementsByClassName('c-message_kit__text');
+                                const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
+                                const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
+
+                                const chatRefs = JSON.parse(items.chatRefs);
+                                const chatReferences = Object.keys(chatRefs);
+                                const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
+                                const chatDeliveryRequests = Object.values(chatRefs).map(arr => arr[2]);
+
+                                crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests);
+                            }, 2000);
+
+                            /**
+                             * Goes through focused Slack tab, scans and colorises recent chats.
+                             *
+                             * @param {NodeList} allMessages
+                             * @param {NodeList} manualChannelMessages
+                             * @param {Array} chatReferences
+                             * @param {Array} chatRefsColors
+                             * @param chatDeliveryRequests
+                             * @returns {null}
+                             */
+                            function crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests) {
+                                for (let i = 0; i < chatReferences.length; i++) {
+                                    const cR = chatReferences[i];
+                                    const dR = chatDeliveryRequests[i];
+
+                                    for (let j = 0; j < allMessages.length; j++) {
+                                        const foundPackageRefAtIndex = allMessages[j].innerHTML.indexOf(cR);
+                                        const foundDeliveryReqAtIndex = allMessages[j].innerHTML.indexOf(dR);
+
+                                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
+                                            allMessages[j].parentNode.parentNode.parentNode.style.backgroundColor = chatRefsColors[i];
+                                        }
+                                    }
+                                    for (let k = 0; k < manualChannelMessages.length; k++) {
+                                        const foundPackageRefAtIndex = manualChannelMessages[k].innerHTML.indexOf(cR);
+                                        const foundDeliveryReqAtIndex = manualChannelMessages[k].innerHTML.indexOf(dR);
+
+                                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
+                                            manualChannelMessages[k]
+                                                .parentNode
+                                                .parentNode
+                                                .parentNode
+                                                .parentNode
+                                                .parentNode
+                                                .parentNode
+                                                .parentNode
+                                                .style.backgroundColor = chatRefsColors[i];
+                                        }
+                                    }
+                                }
+                            }
+
+                            return;
+                        }
+
+                        function initialize(element, main_Process) {
+                            if (!items.chatRefs) {
+                                chromeStorage.local.set({chatRefs: JSON.stringify({})});
+                            }
+
+                            if (!items.colorCounter) {
+                                chromeStorage.local.set({colorCounter: 0});
+                            }
+
+                            if (document != null && $(element).length > 0) {
+                                clearInterval(launcher);
+                                main_Process();
+                            } else {
+                                launcher();
+                            }
+                        }
+
+                        var launcher = () => setInterval(function () {
+                            initialize('.nav__link__text__inbox-name', main);
+                        }, 2000);
+
+                        function main() {
+                            var channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+                            crawlChannelBoards(channels);
+                            getUserID();
+
+                        }
+
+                        function getChannelsBoards() {
+
+                            return $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+
+                        }
+
+                        function crawlChannelBoards(channels) {
+                            var channelLists = [];
+                            var userID = getUserID;
+
+                            getUserID();
+
+                            channels.each((i, el) => {
+
+                                var channel_link = 'https://app.intercom.com/' + $(el).attr('href');
+                                var channel_id = channel_link.match(/inbox\/inbox\/(\d{7}|view:486)/);
+                                var channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim();
+                                var userID = getUserID();
+
+                                channelLists.push({
+                                    channelName: channel_name,
+                                    channelLink: channel_link,
+                                    channelId: channel_id,
+                                });
+
+                                chromeStorage.local.set({
+                                    intercom: JSON.stringify({
+                                        channelName: channel_name,
+                                        channelLink: channel_link,
+                                        channelId: channel_id,
+                                        userId: userID,
+                                    }),
+                                });
+                            });
+
+                        }
+
+                        function getUserID() {
+                            var linkAvatar = '' + $('a.nav__link__inbox-link')[0];
+                            var regex_avatar = /(\d{7})/;
+                            var userID = linkAvatar.match(regex_avatar)[0];
+                            return userID;
+                        }
+
+                        function getUrl() {
+                            var current_url = window.location.href;
+                            return current_url;
+                        }
+
+                        function getConvID() {
+                            var current_url = getUrl();
+                            var regex_conv_id = /conversations\/(\d+)/;
+                            return current_url.match(regex_conv_id)[1];
+                        }
+
+                        function storeConvInStorage(new_conv) {
+                            var forStorage = items.onGoingChats;
+
+                            var all_conv = items.onGoingChats.toString().split(',');
+
+                            if (!all_conv.includes(new_conv)) {
+                                all_conv.push(new_conv);
+                                forStorage = all_conv.join(",");
+                            }
+
+                            chromeStorage.local.set({onGoingChats: forStorage});
+                        }
+
+                        function inChannel() {
+                            var channels = getChannelsBoards();
+                            var in_channel = false;
+
+                            $(channels).each((i, channel) => {
+                                window.location.href.includes(channel) ? in_channel = true : null;
+                            });
+                            return in_channel;
+                        }
+
+                        function anyPost() {
+                            var any_post = false;
+                            $('.ember-view.conversation__stream .o__for-admin a').each((i, e) => {
+                                if (e.href.match(/admins\/(\d+)/)[1] == getUserID()) {
+                                    any_post = true;
+                                }
+                            });
+                            return any_post;
+                        }
+
+                        function searchForConv() {
+                            if (inChannel() && anyPost()) {
+                                var new_conv = getConvID();
+                                storeConvInStorage(new_conv);
+                            }
+                        }
+
+                        function getMyChats() {
+                            var list_chats = $('.inbox__conversation-list-item a');
+                            var stored_chats = items.onGoingChats.split(',');
+                            const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
+                            const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
+                            const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
+
+                            for (let i = 0; i < list_chats.length; i++) {
+                                const currentChat = list_chats[i];
+
+                                for (let j = 0; j < chatRefsChatIds.length; j++) {
+                                    let regexCheck = "/conversations/" + chatRefsChatIds[j];
+                                    let regex = new RegExp(regexCheck, "g");
+
+                                    if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
+                                        $(currentChat).css('background-color', chatRefsColors[j]);
+                                    }
+                                }
+                            }
+                        }
+
+                        setInterval(() => {
+                            chromeStorage.local.get(null, function (updatedItems) {
+                                items = updatedItems;
+                            });
+
+                            function initialize_color() {
+                                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+                                    clearInterval(launcher2);
+                                    main_2();
+                                } else {
+                                    clearInterval(launcher2);
+                                    launcher2 = setInterval(function () {
+                                        initialize_color();
+                                    }, 2000);
+                                }
+                            }
+
+                            var launcher2 = setInterval(function () {
+                                initialize_color();
+                            }, 2000);
+                        }, 1000)
+
+                        $(document).ready(function (e) {
+                            function initialize_color() {
+                                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+                                    clearInterval(launcher2);
+                                    main_2();
+                                } else {
+                                    clearInterval(launcher2);
+                                    launcher2 = setInterval(function () {
+                                        initialize_color();
+                                    }, 2000);
+                                }
+                            }
+
+                            var launcher2 = setInterval(function () {
+                                initialize_color();
+                            }, 2000);
+                        });
+
+                        function main_2() {
+                            searchForConv();
+                            getMyChats();
+                            extendedChatHighlighting();
+                        }
+
+                        function extendedChatHighlighting() {
+                            console.log(items);
+                            const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
+                            let counter = items.colorCounter;
+                            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
+                            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
+
+                            if (!packageReference && !deliveryRequest) return;
+
+                            packageReference = packageReference?.length > 0 ? packageReference[0] : null;
+                            deliveryRequest = deliveryRequest?.length > 0 ? deliveryRequest[0] : null;
+
+                            const openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
+                            const openedChatInfoMessages = openedChatInfo.getElementsByTagName('p');
+                            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
+                            let chatReference;
+
+                            if (packageReference) {
+                                chatReference = packageReference;
+                            } else if (deliveryRequest) {
+                                chatReference = deliveryRequest;
+                            }
+
+                            if (!chatReference) {
+                                return;
+                            }
+
+                            if (chatReference && !chatRefs[chatReference] && anyPost()) {
+                                chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
+                                chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
+
+                            } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
+                                if (counter >= chatColors.length) {
+                                    chromeStorage.local.set({colorCounter: 0});
+                                }
+
+                                for (let i = 0; i < openedChatInfoMessages.length; i++) {
+                                    for (let j = 0; j < intercomToSlackMessages.length; j++) {
+                                        if (openedChatInfoMessages[i].innerHTML.includes(intercomToSlackMessages[j])) {
+                                            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
+
+                                            chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
+                                            chromeStorage.local.set({colorCounter: +counter + 1});
+                                            chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        function cleanStorage() {
+                            var myinterval = 15 * 60 * 1000; // 15 min interval
+                            setInterval(function () {
+                                resetValues();
+                            }, myinterval);
+                        }
+
+                        function resetValues() {
+                            const specialistChatCount = +document.getElementsByClassName('submenu__sections__section__items__item__count')[0].innerHTML.trim();
+
+                            if (specialistChatCount > 0) return;
+
+                            chromeStorage.local.set({chatRefs: JSON.stringify({})})
+                            chromeStorage.local.set({onGoingChats: "1"})
+                            if (items.colorCounter >= chatColors.length - 1) {
+                                chromeStorage.local.set({colorCounter: 0})
+                            } else {
+                                chromeStorage.local.set({colorCounter: items.colorCounter + 1})
+                            }
+                        }
+
+                        cleanStorage();
+                    });
+                })();
             }
         })
     },
@@ -596,356 +946,4 @@ function MASidebarMod() {
 
         rowTimingTd.style.color = "green";
     }
-}
-
-function IntercomSlackConnection(chromeStorage) {
-    chromeStorage.local.get(null, function (items) {
-        /* Set initial values */
-        const baseColor = "#dfecc9";
-        const chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
-        const intercomToSlackMessages = [
-            "We have contacted the client",
-            "We contacted the client",
-            "https://app.slack.com/client/",
-            "Message sent to Just Eat in Slack!",
-            "One moment please, we are going to confirm with the client",
-            "Message sent to client via support-out-client",
-            "Cancellation message sent to Slack!",
-        ];
-
-        items.onGoingChats === undefined ? chromeStorage.local.set({onGoingChats: "1"}) : null;
-        items.colorCounter === undefined ? chromeStorage.local.set({colorCounter: 0}) : null;
-
-        /* Executes in Slack */
-        if (window.location.href.indexOf('slack') !== -1) {
-            setInterval(function () {
-                if (!items.chatRefs) {
-                    chromeStorage.local.set({chatRefs: JSON.stringify({})});
-                }
-
-                if (!items.colorCounter) {
-                    chromeStorage.local.set({colorCounter: 0});
-                }
-
-                const searchedMessages = document.getElementsByClassName('c-search_message__body');
-                const channelMessages = document.getElementsByClassName('c-message_kit__text');
-                const allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
-                const manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
-
-                const chatRefs = JSON.parse(items.chatRefs);
-                const chatReferences = Object.keys(chatRefs);
-                const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
-                const chatDeliveryRequests = Object.values(chatRefs).map(arr => arr[2]);
-
-                crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests);
-            }, 2000);
-
-            /**
-             * Goes through focused Slack tab, scans and colorises recent chats.
-             *
-             * @param {NodeList} allMessages
-             * @param {NodeList} manualChannelMessages
-             * @param {Array} chatReferences
-             * @param {Array} chatRefsColors
-             * @param chatDeliveryRequests
-             * @returns {null}
-             */
-            function crawlSlackChannel(allMessages, manualChannelMessages, chatReferences, chatRefsColors, chatDeliveryRequests) {
-                for (let i = 0; i < chatReferences.length; i++) {
-                    const cR = chatReferences[i];
-                    const dR = chatDeliveryRequests[i];
-
-                    for (let j = 0; j < allMessages.length; j++) {
-                        const foundPackageRefAtIndex = allMessages[j].innerHTML.indexOf(cR);
-                        const foundDeliveryReqAtIndex = allMessages[j].innerHTML.indexOf(dR);
-
-                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
-                            allMessages[j].parentNode.parentNode.parentNode.style.backgroundColor = chatRefsColors[i];
-                        }
-                    }
-                    for (let k = 0; k < manualChannelMessages.length; k++) {
-                        const foundPackageRefAtIndex = manualChannelMessages[k].innerHTML.indexOf(cR);
-                        const foundDeliveryReqAtIndex = manualChannelMessages[k].innerHTML.indexOf(dR);
-
-                        if (foundPackageRefAtIndex !== -1 || foundDeliveryReqAtIndex !== -1) {
-                            manualChannelMessages[k]
-                                .parentNode
-                                .parentNode
-                                .parentNode
-                                .parentNode
-                                .parentNode
-                                .parentNode
-                                .parentNode
-                                .style.backgroundColor = chatRefsColors[i];
-                        }
-                    }
-                }
-            }
-
-            return;
-        }
-
-        function initialize(element, main_Process) {
-            if (!items.chatRefs) {
-                chromeStorage.local.set({chatRefs: JSON.stringify({})});
-            }
-
-            if (!items.colorCounter) {
-                chromeStorage.local.set({colorCounter: 0});
-            }
-
-            if (document != null && $(element).length > 0) {
-                clearInterval(launcher);
-                main_Process();
-            } else {
-                launcher();
-            }
-        }
-
-        var launcher = () => setInterval(function () {
-            initialize('.nav__link__text__inbox-name', main);
-        }, 2000);
-
-        function main() {
-            var channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
-            crawlChannelBoards(channels);
-            getUserID();
-
-        }
-
-        function getChannelsBoards() {
-
-            return $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
-
-        }
-
-        function crawlChannelBoards(channels) {
-            var channelLists = [];
-            var userID = getUserID;
-
-            getUserID();
-
-            channels.each((i, el) => {
-
-                var channel_link = 'https://app.intercom.com/' + $(el).attr('href');
-                var channel_id = channel_link.match(/inbox\/inbox\/(\d{7}|view:486)/);
-                var channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim();
-                var userID = getUserID();
-
-                channelLists.push({
-                    channelName: channel_name,
-                    channelLink: channel_link,
-                    channelId: channel_id,
-                });
-
-                chromeStorage.local.set({
-                    intercom: JSON.stringify({
-                        channelName: channel_name,
-                        channelLink: channel_link,
-                        channelId: channel_id,
-                        userId: userID,
-                    }),
-                });
-            });
-
-        }
-
-        function getUserID() {
-            var linkAvatar = '' + $('a.nav__link__inbox-link')[0];
-            var regex_avatar = /(\d{7})/;
-            var userID = linkAvatar.match(regex_avatar)[0];
-            return userID;
-        }
-
-        function getUrl() {
-            var current_url = window.location.href;
-            return current_url;
-        }
-
-        function getConvID() {
-            var current_url = getUrl();
-            var regex_conv_id = /conversations\/(\d+)/;
-            return current_url.match(regex_conv_id)[1];
-        }
-
-        function storeConvInStorage(new_conv) {
-            var forStorage = items.onGoingChats;
-
-            var all_conv = items.onGoingChats.toString().split(',');
-
-            if (!all_conv.includes(new_conv)) {
-                all_conv.push(new_conv);
-                forStorage = all_conv.join(",");
-            }
-
-            chromeStorage.local.set({onGoingChats: forStorage});
-        }
-
-        function inChannel() {
-            var channels = getChannelsBoards();
-            var in_channel = false;
-
-            $(channels).each((i, channel) => {
-                window.location.href.includes(channel) ? in_channel = true : null;
-            });
-            return in_channel;
-        }
-
-        function anyPost() {
-            var any_post = false;
-            $('.ember-view.conversation__stream .o__for-admin a').each((i, e) => {
-                if (e.href.match(/admins\/(\d+)/)[1] == getUserID()) {
-                    any_post = true;
-                }
-            });
-            return any_post;
-        }
-
-        function searchForConv() {
-            if (inChannel() && anyPost()) {
-                var new_conv = getConvID();
-                storeConvInStorage(new_conv);
-            }
-        }
-
-        function getMyChats() {
-            var list_chats = $('.inbox__conversation-list-item a');
-            var stored_chats = items.onGoingChats.split(',');
-            const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
-            const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
-            const chatRefsColors = Object.values(chatRefs).map(arr => arr[1]);
-
-            for (let i = 0; i < list_chats.length; i++) {
-                const currentChat = list_chats[i];
-
-                for (let j = 0; j < chatRefsChatIds.length; j++) {
-                    let regexCheck = "/conversations/" + chatRefsChatIds[j];
-                    let regex = new RegExp(regexCheck, "g");
-
-                    if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
-                        $(currentChat).css('background-color', chatRefsColors[j]);
-                    }
-                }
-            }
-        }
-
-        setInterval(() => {
-            chromeStorage.local.get(null, function (updatedItems) {
-                items = updatedItems;
-            });
-
-            function initialize_color() {
-                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-                    clearInterval(launcher2);
-                    main_2();
-                } else {
-                    clearInterval(launcher2);
-                    launcher2 = setInterval(function () {
-                        initialize_color();
-                    }, 2000);
-                }
-            }
-
-            var launcher2 = setInterval(function () {
-                initialize_color();
-            }, 2000);
-        }, 1000)
-
-        $(document).ready(function (e) {
-            function initialize_color() {
-                if (document != null && $('.inbox__conversation-list-item a').length > 0) {
-                    clearInterval(launcher2);
-                    main_2();
-                } else {
-                    clearInterval(launcher2);
-                    launcher2 = setInterval(function () {
-                        initialize_color();
-                    }, 2000);
-                }
-            }
-
-            var launcher2 = setInterval(function () {
-                initialize_color();
-            }, 2000);
-        });
-
-        function main_2() {
-            searchForConv();
-            getMyChats();
-            extendedChatHighlighting();
-        }
-
-        function extendedChatHighlighting() {
-            console.log(items);
-            const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
-            let counter = items.colorCounter;
-            let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
-            let deliveryRequest = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]?.split(' ')[0]?.split('<br>');
-
-            if (!packageReference && !deliveryRequest) return;
-
-            packageReference = packageReference?.length > 0 ? packageReference[0] : null;
-            deliveryRequest = deliveryRequest?.length > 0 ? deliveryRequest[0] : null;
-
-            const openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
-            const openedChatInfoMessages = openedChatInfo.getElementsByTagName('p');
-            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
-            let chatReference;
-
-            if (packageReference) {
-                chatReference = packageReference;
-            } else if (deliveryRequest) {
-                chatReference = deliveryRequest;
-            }
-
-            if (!chatReference) {
-                return;
-            }
-
-            if (chatReference && !chatRefs[chatReference] && anyPost()) {
-                chatRefs[chatReference] = [currentChatId, baseColor, deliveryRequest];
-                chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
-
-            } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
-                if (counter >= chatColors.length) {
-                    chromeStorage.local.set({colorCounter: 0});
-                }
-
-                for (let i = 0; i < openedChatInfoMessages.length; i++) {
-                    for (let j = 0; j < intercomToSlackMessages.length; j++) {
-                        if (openedChatInfoMessages[i].innerHTML.includes(intercomToSlackMessages[j])) {
-                            const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
-
-                            chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
-                            chromeStorage.local.set({colorCounter: +counter + 1});
-                            chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
-                        }
-                    }
-                }
-            }
-        }
-
-        function cleanStorage() {
-            var myinterval = 15 * 60 * 1000; // 15 min interval
-            setInterval(function () {
-                resetValues();
-            }, myinterval);
-        }
-
-        function resetValues() {
-            const specialistChatCount = +document.getElementsByClassName('submenu__sections__section__items__item__count')[0].innerHTML.trim();
-
-            if (specialistChatCount > 0) return;
-
-            chromeStorage.local.set({chatRefs: JSON.stringify({})})
-            chromeStorage.local.set({onGoingChats: "1"})
-            if (items.colorCounter >= chatColors.length - 1) {
-                chromeStorage.local.set({colorCounter: 0})
-            } else {
-                chromeStorage.local.set({colorCounter: items.colorCounter + 1})
-            }
-        }
-
-        cleanStorage();
-    });
 }
