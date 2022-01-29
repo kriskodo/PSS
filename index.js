@@ -5,7 +5,7 @@ window.Pontica = {
         chromeStorage.local.get(null, function (items) {
             const state = items.checkboxesState;
 
-            if(!state) chromeStorage.local.set({checkboxesState: Array.fill(false, 0, NUMBER_OF_SCRIPTS)});
+            if(!state) chromeStorage.local.set({checkboxesState: [].fill(false, 0, NUMBER_OF_SCRIPTS)});
 
             if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/drivers") && state[0]) {
                 BOVehicleModification();
