@@ -907,6 +907,7 @@ function IntercomSlackConnection(items, chromeStorage) {
 
         } else if (chatReference && chatRefs[chatReference] && (chatRefs[chatReference][1] === baseColor || !chatRefs[chatReference][1]) && anyPost()) {
             if (counter >= chatColors.length) {
+                counter = 0;
                 chromeStorage.local.set({colorCounter: 0});
             }
 
