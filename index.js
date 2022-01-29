@@ -1,26 +1,36 @@
 window.Pontica = {
     exec: function exec(chromeStorage) {
         chromeStorage.local.get(null, function (items) {
-            const state = items.checkboxesState;
-            console.log(state);
+            const state = state;
 
-            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/drivers")) {
+            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/drivers") && state[0]) {
                 BOVehicleModification();
             }
-            if (window.location.href === "https://backoffice.internal.stuart.com/admin/packages") {
+            if (window.location.href === "https://backoffice.internal.stuart.com/admin/packages" && state[1]) {
                 FilteringPackages();
             }
             if (window.location.href.includes("https://www.fountain.com/stuart/applicant")) {
-                FountainImprovements();
-                MagnifyFountainImages();
+                if (state[2]) {
+                    FountainImprovements();
+                }
+
+                if (state[3]) {
+                    MagnifyFountainImages();
+                }
             }
-            if (window.location.href.includes("https://app.intercom.com/a/apps*")) {
+            if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[4]) {
                 IntercomToBO();
             }
-            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages")) {
+            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[5]) {
                 MASidebarMod();
             }
-            if (window.location.href.includes("https://app.slack.com/client") || window.location.href.includes("https://app.intercom.com/a/apps")) {
+            if (
+                (
+                    window.location.href.includes("https://app.slack.com/client") ||
+                    window.location.href.includes("https://app.intercom.com/a/apps")
+                ) &&
+                state[6]
+            ) {
                 IntercomSlackConnection(items, chromeStorage);
             }
         })
@@ -875,7 +885,6 @@ function IntercomSlackConnection(items, chromeStorage) {
     }
 
     function extendedChatHighlighting() {
-        console.log(items);
         const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
         let counter = items.colorCounter;
         let packageReference = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]?.split(' ')[0]?.split('<br>');
