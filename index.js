@@ -917,7 +917,8 @@ function IntercomSlackConnection(chromeStorage) {
                             const currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
 
                             chatRefs[chatReference] = [currentChatId, chatColors[counter], deliveryRequest];
-                            chromeStorage.local.set({colorCounter: +counter + 1});
+                            counter += 1;
+                            chromeStorage.local.set({colorCounter: +counter});
                             chromeStorage.local.set({chatRefs: JSON.stringify(chatRefs)});
                         }
                     }
