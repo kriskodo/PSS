@@ -1,31 +1,39 @@
+const DEPARTMENTS = {
+    CHATS: "CHATS",
+    MA: "MA",
+    ADMIN: "ADMIN"
+}
+
 const scriptsInformation = [
     {
         title: "Enlarge BO Vehicle Type",
-        description: "Enlarges the driver's vehicle in BackOffice"
-    },
-    {
-        title: "BackOffice Filter Packages",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
     },
     {
         title: "Fountain Improvements",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.ADMIN]
     },
     {
         title: "Magnify Fountain Images",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.ADMIN]
     },
     {
         title: "Intercom to BackOffice Sidebar Link",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
     },
     {
         title: "Manual Assignments BO Sidebar",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.MA]
     },
     {
         title: "Intercom to Slack Highlighting",
-        description: "Enlarges the driver's vehicle in BackOffice"
+        description: "Enlarges the driver's vehicle in BackOffice",
+        tags: [DEPARTMENTS.CHATS]
     },
 ]
 
@@ -40,22 +48,20 @@ window.Pontica = {
             if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/drivers") && state[0]) {
                 BOVehicleModification();
             }
-            if (window.location.href === "https://backoffice.internal.stuart.com/admin/packages" && state[1]) {
-                FilteringPackages();
-            }
+
             if (window.location.href.includes("https://www.fountain.com/stuart/applicant")) {
-                if (state[2]) {
+                if (state[1]) {
                     FountainImprovements();
                 }
 
-                if (state[3]) {
+                if (state[2]) {
                     MagnifyFountainImages();
                 }
             }
-            if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[4]) {
+            if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[3]) {
                 IntercomToBO();
             }
-            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[5]) {
+            if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[4]) {
                 MASidebarMod();
             }
             if (
@@ -63,7 +69,7 @@ window.Pontica = {
                     window.location.href.includes("https://app.slack.com/client") ||
                     window.location.href.includes("https://app.intercom.com/a/apps")
                 ) &&
-                state[6]
+                state[5]
             ) {
                 IntercomSlackConnection(items, chromeStorage);
             }
@@ -98,110 +104,6 @@ function BOVehicleModification() {
     if (img.src === "https://backoffice.internal.stuart.com/assets/ic_marker_car-7a8d8d68ce6bdad7a16dd2dd70876ced3327656418b34e0765b907c2e8beee66.png") {
         paragraph.innerHTML = "Car";
         imgParent.appendChild(paragraph);
-    }
-}
-
-function FilteringPackages() {
-    const table = document.getElementById("index_table_packages");
-    const indexFooter = document.getElementById("index_footer");
-    const scopeGroup = document.getElementsByClassName("scope-default-group")[0];
-    const multipleChoiceForm = document.createElement("form");
-    const select = document.createElement("select");
-
-    if (table) {
-        scopeGroup.insertBefore(indexFooter, scopeGroup.childNodes[15]);
-        indexFooter.style.marginRight = "250px";
-        const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        const stopBtn = document.createElement("input");
-        createSelectForm(scopeGroup, multipleChoiceForm, select, stopBtn);
-
-        if (localStorage.getItem("tampscript_bo_filtering_value")) {
-            openLinks(rows, localStorage.getItem("tampscript_bo_filtering_value"));
-        }
-
-        multipleChoiceForm.addEventListener("submit", () => {
-            const selectedValue = select.options[select.selectedIndex].value;
-            localStorage.setItem("tampscript_bo_filtering_value", selectedValue);
-        });
-
-        stopBtn.addEventListener("click", () => {
-            location.reload();
-            localStorage.removeItem("tampscript_bo_filtering_value");
-        });
-    }
-
-    function openLinks(rows, type) {
-        for (let i = 0; i < rows.length; i++) {
-            const currentRowStatus = rows[i].getElementsByClassName(type)[0];
-
-            if (currentRowStatus?.innerHTML?.toLowerCase() !== type) {
-                continue;
-            }
-
-            const currentRowId = rows[i].getElementsByClassName("col-id")[0].getElementsByTagName("a")[0];
-            const href = currentRowId.getAttribute("href");
-            openInNewTab("https://backoffice.internal.stuart.com/" + href);
-        }
-    }
-
-    function createSelectForm(scopeGroup, multipleChoiceForm, select, stopBtn) {
-        /* List Item  */
-        const liItem = document.createElement("li");
-        liItem.setAttribute("class", "scope");
-        liItem.style.marginLeft = "20px";
-        liItem.style.height = "28px";
-
-        const option1 = document.createElement("option");
-        const option2 = document.createElement("option");
-        option1.value = "picking";
-        option1.innerHTML = "Picking";
-
-        option2.value = "delivering";
-        option2.innerHTML = "Delivering";
-
-        select.appendChild(option1);
-        select.appendChild(option2);
-        select.style.height = "28px";
-
-        /* submitBtn */
-        const submitBtn = document.createElement("input");
-        submitBtn.setAttribute("type", "submit");
-        submitBtn.setAttribute("value", "Start Script");
-        submitBtn.style.padding = "8px 10px";
-        submitBtn.style.marginLeft = "10px";
-
-
-        stopBtn.setAttribute("type", "button");
-        stopBtn.setAttribute("value", "Stop Script");
-        stopBtn.style.padding = "8px 10px";
-        stopBtn.style.marginLeft = "10px";
-        stopBtn.style.border = "none";
-        stopBtn.style.borderRadius = "0px";
-
-        submitBtn.disabled = !!localStorage.getItem("tampscript_bo_filtering_value");
-        stopBtn.disabled = !localStorage.getItem("tampscript_bo_filtering_value");
-
-        stopBtn.style.backgroundColor = stopBtn.disabled ? "grey" : "#8B0000";
-        stopBtn.style.background = stopBtn.disabled ? "grey" : "#8B0000";
-
-        submitBtn.style.cursor = submitBtn.disabled ? "not-allowed" : "pointer";
-        stopBtn.style.cursor = stopBtn.disabled ? "not-allowed" : "pointer";
-
-        submitBtn.style.backgroundColor = submitBtn.disabled ? "grey" : "#11a3eb";
-        submitBtn.style.background = submitBtn.disabled ? "grey" : "#11a3eb";
-
-        /* Append everything */
-        multipleChoiceForm.appendChild(select);
-        multipleChoiceForm.appendChild(submitBtn);
-        multipleChoiceForm.appendChild(stopBtn);
-        liItem.appendChild(multipleChoiceForm);
-        scopeGroup.insertBefore(liItem, scopeGroup.childNodes[14]);
-    }
-
-    function openInNewTab(href) {
-        Object.assign(document.createElement('a'), {
-            target: '_blank', href: href,
-        }).click();
     }
 }
 
