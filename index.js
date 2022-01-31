@@ -73,6 +73,10 @@ window.Pontica = {
             ) {
                 IntercomSlackConnection(items, chromeStorage);
             }
+
+            if(window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[6]) {
+                BOFilterPackages();
+            }
         })
     },
 };
@@ -892,4 +896,110 @@ function IntercomSlackConnection(items, chromeStorage) {
     }
 
     cleanStorage();
+}
+
+function BOFilterPackages() {
+    const table = document.getElementById("index_table_packages");
+    const indexFooter = document.getElementById("index_footer");
+    const scopeGroup = document.getElementsByClassName("scope-default-group")[0];
+    const multipleChoiceForm = document.createElement("form");
+    const select = document.createElement("select");
+
+    if (table) {
+        scopeGroup.insertBefore(indexFooter, scopeGroup.childNodes[15]);
+        indexFooter.style.marginRight = "250px";
+        const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        const stopBtn = document.createElement("input");
+        createSelectForm(scopeGroup, multipleChoiceForm, select, stopBtn);
+
+        if (localStorage.getItem("tampscript_bo_filtering_value")) {
+            openLinks(rows, localStorage.getItem("tampscript_bo_filtering_value"));
+        }
+
+        multipleChoiceForm.addEventListener("submit", e => {
+            const selectedValue = select.options[select.selectedIndex].value;
+            localStorage.setItem("tampscript_bo_filtering_value", selectedValue);
+        })
+
+        stopBtn.addEventListener("click", e => {
+            location.reload();
+            localStorage.removeItem("tampscript_bo_filtering_value");
+        });
+    }
+
+    function openLinks(rows, type) {
+        for (let i = 0; i < rows.length; i++) {
+            const currentRow = rows[i];
+            const currentRowStatus = rows[i].getElementsByClassName(type)[0];
+
+            if (currentRowStatus?.innerHTML?.toLowerCase() != type) {
+                continue;
+            }
+
+            const currentRowId = rows[i].getElementsByClassName("col-id")[0].getElementsByTagName("a")[0];
+            const href = currentRowId.getAttribute("href");
+            openInNewTab("https://backoffice.internal.stuart.com/" + href);
+        }
+    }
+
+    function createSelectForm(scopeGroup, multipleChoiceForm, select, stopBtn) {
+        /* List Item  */
+        const liItem = document.createElement("li");
+        liItem.setAttribute("class", "scope");
+        liItem.style.marginLeft = "20px";
+        liItem.style.height = "28px";
+
+        const option1 = document.createElement("option");
+        const option2 = document.createElement("option");
+        option1.value = "picking";
+        option1.innerHTML = "Picking";
+
+        option2.value = "delivering";
+        option2.innerHTML = "Delivering";
+
+        select.appendChild(option1);
+        select.appendChild(option2);
+        select.style.height = "28px";
+
+        /* submitBtn */
+        const submitBtn = document.createElement("input");
+        submitBtn.setAttribute("type", "submit");
+        submitBtn.setAttribute("value", "Start Script");
+        submitBtn.style.padding = "8px 10px";
+        submitBtn.style.marginLeft = "10px";
+
+
+        stopBtn.setAttribute("type", "button");
+        stopBtn.setAttribute("value", "Stop Script");
+        stopBtn.style.padding = "8px 10px";
+        stopBtn.style.marginLeft = "10px";
+        stopBtn.style.border = "none";
+        stopBtn.style.borderRadius = "0px";
+
+        submitBtn.disabled = localStorage.getItem("tampscript_bo_filtering_value") ? true : false;
+        stopBtn.disabled = localStorage.getItem("tampscript_bo_filtering_value") ? false : true;
+
+        stopBtn.style.backgroundColor = stopBtn.disabled ? "grey" : "#8B0000";
+        stopBtn.style.background = stopBtn.disabled ? "grey" : "#8B0000";
+
+        submitBtn.style.cursor = submitBtn.disabled ? "not-allowed" : "pointer";
+        stopBtn.style.cursor = stopBtn.disabled ? "not-allowed" : "pointer";
+
+        submitBtn.style.backgroundColor = submitBtn.disabled ? "grey" : "#11a3eb";
+        submitBtn.style.background = submitBtn.disabled ? "grey" : "#11a3eb";
+
+        /* Append everything */
+        multipleChoiceForm.appendChild(select);
+        multipleChoiceForm.appendChild(submitBtn);
+        multipleChoiceForm.appendChild(stopBtn);
+        liItem.appendChild(multipleChoiceForm);
+        scopeGroup.insertBefore(liItem, scopeGroup.childNodes[14]);
+    }
+
+    function openInNewTab(href) {
+        Object.assign(document.createElement('a'), {
+            target: '_blank',
+            href: href,
+        }).click();
+    }
 }
