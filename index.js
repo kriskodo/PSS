@@ -1,11 +1,41 @@
-const NUMBER_OF_SCRIPTS = 7;
+const scriptsInformation = [
+    {
+        title: "Enlarge BO Vehicle Type",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "BackOffice Filter Packages",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "Fountain Improvements",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "Magnify Fountain Images",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "Intercom to BackOffice Sidebar Link",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "Manual Assignments BO Sidebar",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+    {
+        title: "Intercom to Slack Highlighting",
+        description: "Enlarges the driver's vehicle in BackOffice"
+    },
+]
 
 window.Pontica = {
+    scriptsInformation,
     exec: function exec(chromeStorage) {
         chromeStorage.local.get(null, function (items) {
             const state = items.checkboxesState;
 
-            if(!state) chromeStorage.local.set({checkboxesState: [].fill(false, 0, NUMBER_OF_SCRIPTS)});
+            if(!state) chromeStorage.local.set({checkboxesState: [].fill(false, 0, scripts.length)});
 
             if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/drivers") && state[0]) {
                 BOVehicleModification();
