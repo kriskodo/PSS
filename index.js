@@ -35,6 +35,11 @@ const scriptsInformation = [
         description: "Enlarges the driver's vehicle in BackOffice",
         tags: [DEPARTMENTS.CHATS]
     },
+    {
+        title: "Back Office Filtering Packages",
+        description: "Filters packages",
+        tags: [DEPARTMENTS.CHATS]
+    },
 ]
 
 window.Pontica = {
