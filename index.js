@@ -120,21 +120,21 @@ function FountainImprovements() {
     let interval = setInterval(main, 2000);
     let hasCheckedIfRejected = false;
 
-    $(".js-applicants-search").on("submit", function () {
+    window.$(".js-applicants-search").on("submit", function () {
         hasCheckedIfRejected = false;
     });
 
     function main() {
-        const transitionEventsDiv = $("#transition-events");
+        const transitionEventsDiv = window.$("#transition-events");
 
         if (transitionEventsDiv.length > 0) {
             transitionEventsDiv.css("display", "none");
         }
 
-        let select = $("#funnel_id");
-        let moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
+        let select = window.$("#funnel_id");
+        let moveToModal = window.$("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
 
-        const userInfo = $(".obiq-table__cell > a")[1]?.innerHTML;
+        const userInfo = window.$(".obiq-table__cell > a")[1]?.innerHTML;
 
         if (!userInfo) {
             return;
@@ -148,7 +148,7 @@ function FountainImprovements() {
         }
 
         if (moveToModal.css('display') === 'block') {
-            const options = $("#funnel_id option");
+            const options = window.$("#funnel_id option");
 
             options.each((i) => {
                 if (options[i].innerHTML === userPlaceVehicle) {
@@ -162,7 +162,7 @@ function FountainImprovements() {
 
         function restartMainInterval() {
             let restartInterval = setInterval(() => {
-                let moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
+                let moveToModal = window.$("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
 
                 const footerCheckbox = document.querySelectorAll("#should_run_when_land");
 
@@ -180,10 +180,10 @@ function FountainImprovements() {
         }
 
         function isRejected() {
-            const userInfo = $(".obiq-table__cell > a");
+            const userInfo = window.$(".obiq-table__cell > a");
 
             for (let i = 1; i < userInfo.length; i += 2) {
-                const userInfo = $(".obiq-table__cell > a")[i].innerHTML;
+                const userInfo = window.$(".obiq-table__cell > a")[i].innerHTML;
                 const userStatus = userInfo.split("/")[1];
 
                 if (userStatus.indexOf("Rejected") >= 0 || userStatus.indexOf("Repeat Offenders") >= 0 || userStatus.indexOf("Offboarded") >= 0) {
@@ -522,7 +522,7 @@ function MASidebarMod() {
             return null;
         }
 
-        const datesRegex = /(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]?(:[0-5][0-9])?.?$/gi;
+        const datesRegex = /(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]?(:[0-5][0-9])?.?window.$/gi;
         const match = rowTimingTd.innerHTML.split("-")[1].match(datesRegex);
         let stringToReplace = match[0];
         let hour = stringToReplace.split(":")[0];
@@ -648,7 +648,7 @@ function IntercomSlackConnection(items, chromeStorage) {
             chromeStorage.local.set({colorCounter: 0});
         }
 
-        if (document != null && $(element).length > 0) {
+        if (document != null && window.$(element).length > 0) {
             clearInterval(launcher);
             main_Process();
         } else {
@@ -661,7 +661,7 @@ function IntercomSlackConnection(items, chromeStorage) {
     }, 2000);
 
     function main() {
-        var channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+        var channels = window.$('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
         crawlChannelBoards(channels);
         getUserID();
 
@@ -669,7 +669,7 @@ function IntercomSlackConnection(items, chromeStorage) {
 
     function getChannelsBoards() {
 
-        return $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+        return window.$('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
 
     }
 
@@ -681,9 +681,9 @@ function IntercomSlackConnection(items, chromeStorage) {
 
         channels.each((i, el) => {
 
-            var channel_link = 'https://app.intercom.com/' + $(el).attr('href');
+            var channel_link = 'https://app.intercom.com/' + window.$(el).attr('href');
             var channel_id = channel_link.match(/inbox\/inbox\/(\d{7}|view:486)/);
-            var channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim();
+            var channel_name = window.$(el).find('span.nav__link__text__inbox-name').text().trim();
             var userID = getUserID();
 
             channelLists.push({
@@ -705,7 +705,7 @@ function IntercomSlackConnection(items, chromeStorage) {
     }
 
     function getUserID() {
-        var linkAvatar = '' + $('a.nav__link__inbox-link')[0];
+        var linkAvatar = '' + window.$('a.nav__link__inbox-link')[0];
         var regex_avatar = /(\d{7})/;
         var userID = linkAvatar.match(regex_avatar)[0];
         return userID;
@@ -739,7 +739,7 @@ function IntercomSlackConnection(items, chromeStorage) {
         var channels = getChannelsBoards();
         var in_channel = false;
 
-        $(channels).each((i, channel) => {
+        window.$(channels).each((i, channel) => {
             window.location.href.includes(channel) ? in_channel = true : null;
         });
         return in_channel;
@@ -747,7 +747,7 @@ function IntercomSlackConnection(items, chromeStorage) {
 
     function anyPost() {
         var any_post = false;
-        $('.ember-view.conversation__stream .o__for-admin a').each((i, e) => {
+        window.$('.ember-view.conversation__stream .o__for-admin a').each((i, e) => {
             if (e.href.match(/admins\/(\d+)/)[1] == getUserID()) {
                 any_post = true;
             }
@@ -763,7 +763,7 @@ function IntercomSlackConnection(items, chromeStorage) {
     }
 
     function getMyChats() {
-        var list_chats = $('.inbox__conversation-list-item a');
+        var list_chats = window.$('.inbox__conversation-list-item a');
         var stored_chats = items.onGoingChats.split(',');
         const chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
         const chatRefsChatIds = Object.values(chatRefs).map(arr => arr[0]);
@@ -776,8 +776,8 @@ function IntercomSlackConnection(items, chromeStorage) {
                 let regexCheck = "/conversations/" + chatRefsChatIds[j];
                 let regex = new RegExp(regexCheck, "g");
 
-                if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
-                    $(currentChat).css('background-color', chatRefsColors[j]);
+                if (window.$(currentChat).attr('href').match(regex) && stored_chats.indexOf(window.$(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
+                    window.$(currentChat).css('background-color', chatRefsColors[j]);
                 }
             }
         }
@@ -789,7 +789,7 @@ function IntercomSlackConnection(items, chromeStorage) {
         });
 
         function initialize_color() {
-            if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+            if (document != null && window.$('.inbox__conversation-list-item a').length > 0) {
                 clearInterval(launcher2);
                 main_2();
             } else {
@@ -805,9 +805,9 @@ function IntercomSlackConnection(items, chromeStorage) {
         }, 2000);
     }, 1000)
 
-    $(document).ready(function (e) {
+    window.$(document).ready(function (e) {
         function initialize_color() {
-            if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+            if (document != null && window.$('.inbox__conversation-list-item a').length > 0) {
                 clearInterval(launcher2);
                 main_2();
             } else {
