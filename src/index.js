@@ -47,7 +47,7 @@ const scriptsInformation = [{
     },
 ]
 
-window.Pontica = {
+export default {
     scriptsInformation,
     exec: function exec(chromeStorage) {
         chromeStorage.local.get(null, function(items) {
