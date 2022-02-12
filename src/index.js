@@ -48,7 +48,7 @@ const scriptsInformation = [
   },
 ];
 
-export default JSON.stringify({
+window.Pontica = {
   scriptsInformation,
   exec: function exec(chromeStorage) {
     chromeStorage.local.get(null, function (items) {
@@ -112,8 +112,8 @@ export default JSON.stringify({
         BOFilterPackages();
       }
     });
-  },
-});
+  }
+};
 
 function BOVehicleModification() {
   const rowVehicleType = document.getElementsByClassName("row-type")[0];
