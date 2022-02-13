@@ -10,6 +10,9 @@ const DEPARTMENTS = {
   ADMIN: "ADMIN",
 };
 
+/**
+ * The order matters. In case a script is being added, add to the end.
+ */
 const scriptsInformation = [
   {
     title: "Enlarge BO Vehicle Type",
