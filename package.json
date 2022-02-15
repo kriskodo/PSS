@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "build": "webpack --config webpack.config.js",
-        "git": "git add . && git commit -m process.env.MESSAGE && git push"
+        "git": "git add . && git commit -m",
+        "postgit": "git push --all"
     },
     "repository": {
         "type": "git",
