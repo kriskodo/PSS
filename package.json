@@ -4,7 +4,8 @@
     "description": "My webpack project",
     "main": "index.js",
     "scripts": {
-        "build": "webpack --config webpack.config.js"
+        "build": "webpack --config webpack.config.js",
+        "git": "git add . && git commit -m $MESSAGE && git push"
     },
     "repository": {
         "type": "git",

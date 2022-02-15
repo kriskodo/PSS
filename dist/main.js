@@ -4484,18 +4484,14 @@ var DEPARTMENTS = {
   MA: "MA",
   ADMIN: "ADMIN"
 };
+/**
+ * The order matters. In case a script is being added, add to the end.
+ */
+
 var scriptsInformation = [{
   title: "Enlarge BO Vehicle Type",
   description: "Enlarges the driver's vehicle in BackOffice",
   tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
-}, {
-  title: "Fountain Improvements",
-  description: "Enlarges the driver's vehicle in BackOffice",
-  tags: [DEPARTMENTS.ADMIN]
-}, {
-  title: "Magnify Fountain Images",
-  description: "Enlarges the driver's vehicle in BackOffice",
-  tags: [DEPARTMENTS.ADMIN]
 }, {
   title: "Intercom to BackOffice Sidebar Link",
   description: "Enlarges the driver's vehicle in BackOffice",
@@ -4526,29 +4522,19 @@ window.Pontica = {
         BOVehicleModification();
       }
 
-      if (window.location.href.includes("https://www.fountain.com/stuart/applicant")) {
-        if (state[1]) {
-          FountainImprovements();
-        }
-
-        if (state[2]) {
-          MagnifyFountainImages();
-        }
-      }
-
-      if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[3]) {
+      if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[1]) {
         IntercomToBO();
       }
 
-      if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[4]) {
+      if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[2]) {
         MASidebarMod();
       }
 
-      if ((window.location.href.includes("https://app.slack.com/client") || window.location.href.includes("https://app.intercom.com/a/apps")) && state[5]) {
+      if ((window.location.href.includes("https://app.slack.com/client") || window.location.href.includes("https://app.intercom.com/a/apps")) && state[3]) {
         IntercomSlackConnection(items, chromeStorage);
       }
 
-      if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[6]) {
+      if (window.location.href.includes("https://backoffice.internal.stuart.com/admin/packages") && state[4]) {
         BOFilterPackages();
       }
     });
@@ -4585,86 +4571,6 @@ function BOVehicleModification() {
   }
 }
 
-function FountainImprovements() {
-  var interval = setInterval(main, 2000);
-  var hasCheckedIfRejected = false;
-  $(".js-applicants-search").on("submit", function () {
-    hasCheckedIfRejected = false;
-  });
-
-  function main() {
-    var _$$;
-
-    var transitionEventsDiv = $("#transition-events");
-
-    if (transitionEventsDiv.length > 0) {
-      transitionEventsDiv.css("display", "none");
-    }
-
-    var select = $("#funnel_id");
-    var moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
-
-    var userInfo = (_$$ = $(".obiq-table__cell > a")[1]) === null || _$$ === void 0 ? void 0 : _$$.innerHTML;
-
-    if (!userInfo) {
-      return;
-    }
-
-    var userPlaceVehicle = userInfo.split("/")[0];
-
-    if (isRejected() && !hasCheckedIfRejected) {
-      hasCheckedIfRejected = true;
-      alert("Rejected driver/Repeat offender/Offboarded");
-    }
-
-    if (moveToModal.css('display') === 'block') {
-      var options = $("#funnel_id option");
-      options.each(function (i) {
-        if (options[i].innerHTML === userPlaceVehicle) {
-          select.val(options[i].value);
-          clearInterval(interval);
-          restartMainInterval();
-          return false;
-        }
-      });
-    }
-
-    function restartMainInterval() {
-      var restartInterval = setInterval(function () {
-        var moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
-
-        var footerCheckbox = document.querySelectorAll("#should_run_when_land");
-
-        if (footerCheckbox[1] && footerCheckbox[1].checked === true) {
-          footerCheckbox[1].click();
-        }
-
-        if (moveToModal.css('display') !== 'block') {
-          interval = setInterval(main, 2000);
-          clearInterval(restartInterval);
-          hasCheckedIfRejected = false;
-        }
-      }, 1000);
-    }
-
-    function isRejected() {
-      var userInfo = $(".obiq-table__cell > a");
-
-      for (var i = 1; i < userInfo.length; i += 2) {
-        var _userInfo = $(".obiq-table__cell > a")[i].innerHTML;
-
-        var userStatus = _userInfo.split("/")[1];
-
-        if (userStatus.indexOf("Rejected") >= 0 || userStatus.indexOf("Repeat Offenders") >= 0 || userStatus.indexOf("Offboarded") >= 0) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-  }
-}
-
 function IntercomToBO() {
   var userInfoBox;
   var qualityBox;
@@ -4672,7 +4578,7 @@ function IntercomToBO() {
     userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
 
     if (userInfoBox) {
-      var driverIdLink = userInfoBox.getElementsByTagName('a')[0];
+      var driverIdLink = userInfoBox.getElementsByTagName("a")[0];
       var driverId = driverIdLink.innerHTML;
       driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
     }
@@ -4689,125 +4595,6 @@ function IntercomToBO() {
   }, 2000);
 }
 
-function MagnifyFountainImages() {
-  var form = document.querySelectorAll(".js-applicants-search")[0];
-  var imageOpenContainer = document.createElement("div");
-  imageOpenContainer.style.width = "1000px";
-  imageOpenContainer.style.height = "100vh";
-  imageOpenContainer.style.position = "absolute";
-  imageOpenContainer.style.pointerEvents = "none";
-  imageOpenContainer.style.top = "0";
-  imageOpenContainer.style.left = "0";
-  imageOpenContainer.style.backgroundSize = "contain";
-  imageOpenContainer.style.backgroundRepeat = "no-repeat";
-  imageOpenContainer.style.zIndex = "999";
-  document.getElementsByTagName("body")[0].appendChild(imageOpenContainer);
-  var toggleSavedImagesBtn = document.createElement("button");
-  toggleSavedImagesBtn.style.position = "fixed";
-  toggleSavedImagesBtn.style.left = "30px";
-  toggleSavedImagesBtn.style.bottom = "60px";
-  toggleSavedImagesBtn.style.borderRadius = "5px";
-  toggleSavedImagesBtn.style.border = "none";
-  toggleSavedImagesBtn.innerHTML = "History";
-  toggleSavedImagesBtn.style.opacity = "0";
-  toggleSavedImagesBtn.style.pointerEvents = "none";
-  toggleSavedImagesBtn.style.zIndex = "999";
-  toggleSavedImagesBtn.style.padding = "5px 15px";
-  document.getElementsByTagName("body")[0].appendChild(toggleSavedImagesBtn);
-  var containerSavedImages = document.createElement("div");
-  containerSavedImages.style.position = "fixed";
-  containerSavedImages.style.left = "110px";
-  containerSavedImages.style.bottom = "100px";
-  containerSavedImages.style.border = "none";
-  containerSavedImages.style.opacity = "0";
-  containerSavedImages.style.pointerEvents = "none";
-  containerSavedImages.style.zIndex = "999";
-  containerSavedImages.style.transition = "opacity .3s";
-  document.getElementsByTagName("body")[0].appendChild(containerSavedImages);
-  toggleSavedImagesBtn.addEventListener("click", function () {
-    if (containerSavedImages.style.opacity === "1") {
-      containerSavedImages.style.opacity = "0";
-      containerSavedImages.style.pointerEvents = "none";
-      return;
-    }
-
-    containerSavedImages.style.opacity = "1";
-    containerSavedImages.style.pointerEvents = "all";
-  });
-  var savedImages;
-  var shouldSaveImages = true;
-  setInterval(function () {
-    var previewContainers = document.querySelectorAll(".applicant-profile-documents__item-preview-column");
-
-    if (!previewContainers || previewContainers.length === 0) {
-      return;
-    }
-
-    toggleSavedImagesBtn.style.opacity = "1";
-    toggleSavedImagesBtn.style.pointerEvents = "all";
-
-    var _loop = function _loop(i) {
-      var container = previewContainers[i];
-      var actionLinkContainer = previewContainers[i].nextElementSibling;
-      var actionLink = actionLinkContainer.getElementsByTagName("a")[0];
-
-      if (shouldSaveImages) {
-        savedImages = document.createElement("div");
-        containerSavedImages.appendChild(savedImages);
-        var newLink = document.createElement("a");
-        var newLinkText = document.createTextNode(container.parentNode.parentNode.firstChild.innerHTML);
-        newLink.href = actionLink.href;
-        newLink.style.zIndex = "999";
-        newLink.classList.add("save-history-link");
-        newLink.appendChild(newLinkText);
-        savedImages.appendChild(newLink);
-      }
-
-      if (actionLink.getAttribute("download").split(".")[actionLink.getAttribute("download").split(".").length - 1] === "pdf") {
-        return "continue";
-      }
-
-      var img = document.createElement("img");
-      img.style.width = "100%";
-      img.style.width = "100%";
-      img.src = actionLink.href;
-      img.onerror = "image_error";
-      container.addEventListener("mouseenter", function () {
-        imageOpenContainer.style.backgroundImage = "url('" + actionLink + "')";
-      });
-      container.addEventListener("mouseleave", function () {
-        imageOpenContainer.style.backgroundImage = "none";
-      });
-    };
-
-    for (var i = 0; i < previewContainers.length; i++) {
-      var _ret = _loop(i);
-
-      if (_ret === "continue") continue;
-    }
-
-    if (shouldSaveImages) {
-      shouldSaveImages = false;
-      var links = document.getElementsByClassName("save-history-link");
-
-      if (links.length > 0) {
-        return;
-      }
-
-      containerSavedImages.appendChild(savedImages);
-    }
-
-    form.addEventListener("submit", function (e) {
-      shouldSaveImages = true;
-      var links = document.getElementsByClassName("save-history-link");
-
-      while (links.length > 0) {
-        links[0].remove();
-      }
-    });
-  }, 1000);
-}
-
 function MASidebarMod() {
   setTimeout(function () {
     return main();
@@ -4821,31 +4608,31 @@ function MASidebarMod() {
 
     sidebarHourToEnglishTime(timezones.BG);
     var zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;
-    var assignSidebar = document.getElementById('assign-a-driver_sidebar_section');
+    var assignSidebar = document.getElementById("assign-a-driver_sidebar_section");
 
     if (!assignSidebar) {
       return;
     }
 
-    var assignSidebarH3 = assignSidebar.getElementsByTagName('h3')[0];
-    var panelContentsSmall = document.getElementsByClassName('panel_contents small')[0];
-    var invitationsTable = document.getElementsByClassName('panel_contents')[6];
-    var hasCurrentPending = invitationsTable.getElementsByClassName('status_tag pending').length > 0;
+    var assignSidebarH3 = assignSidebar.getElementsByTagName("h3")[0];
+    var panelContentsSmall = document.getElementsByClassName("panel_contents small")[0];
+    var invitationsTable = document.getElementsByClassName("panel_contents")[6];
+    var hasCurrentPending = invitationsTable.getElementsByClassName("status_tag pending").length > 0;
     var eligibleDriversTbody = document.querySelectorAll("table.eligible-drivers > tbody")[0];
-    var newTbody = document.createElement('tbody');
-    var opsActionsDiv = document.getElementById('ops_actions');
-    var opsActionsTr = opsActionsDiv.getElementsByTagName('tr');
-    var selfAssignedDriversLinks = document.getElementsByClassName('panel_contents')[0].querySelectorAll("[href*='/admin/drivers']");
+    var newTbody = document.createElement("tbody");
+    var opsActionsDiv = document.getElementById("ops_actions");
+    var opsActionsTr = opsActionsDiv.getElementsByTagName("tr");
+    var selfAssignedDriversLinks = document.getElementsByClassName("panel_contents")[0].querySelectorAll("[href*='/admin/drivers']");
     var selfAssignedDriversIds = [];
 
     for (var i = 0; i < selfAssignedDriversLinks.length; i++) {
-      var currentDriverData = selfAssignedDriversLinks[i].href.split('/');
+      var currentDriverData = selfAssignedDriversLinks[i].href.split("/");
       var currentDriverId = currentDriverData[currentDriverData.length - 1];
       selfAssignedDriversIds.push(currentDriverId);
     }
 
     if (hasCurrentPending) {
-      assignSidebar.innerHTML = '<h1>PENDING</h1>';
+      assignSidebar.innerHTML = "<h1>PENDING</h1>";
       return;
     }
 
@@ -4876,7 +4663,7 @@ function MASidebarMod() {
   function markIfAssigned(distance, index, assignedDrivers, newTbody, selfAssignedDriversIds) {
     var _newTbody$getElements;
 
-    var currentTd = (_newTbody$getElements = newTbody.getElementsByTagName('tr')[index]) === null || _newTbody$getElements === void 0 ? void 0 : _newTbody$getElements.querySelectorAll("td:nth-child(1)")[0];
+    var currentTd = (_newTbody$getElements = newTbody.getElementsByTagName("tr")[index]) === null || _newTbody$getElements === void 0 ? void 0 : _newTbody$getElements.querySelectorAll("td:nth-child(1)")[0];
 
     if (!currentTd) {
       return;
@@ -4885,12 +4672,12 @@ function MASidebarMod() {
     var currentDriverId = currentTd.innerHTML.split("<")[0];
 
     if (selfAssignedDriversIds.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML = 'System invited driver' + currentDriverId + 'already';
+      currentTd.innerHTML = "System invited driver" + currentDriverId + "already";
       return;
     }
 
     if (assignedDrivers.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML = 'Already assigned.' + currentDriverId;
+      currentTd.innerHTML = "Already assigned." + currentDriverId;
     }
   }
   /**
@@ -4912,9 +4699,9 @@ function MASidebarMod() {
 
 
   function increaseWidth(assignSidebar, panelContentsSmall) {
-    assignSidebar.style.width = '500px';
-    assignSidebar.style.marginLeft = '-210px';
-    panelContentsSmall.style.maxWidth = '500px';
+    assignSidebar.style.width = "500px";
+    assignSidebar.style.marginLeft = "-210px";
+    panelContentsSmall.style.maxWidth = "500px";
   }
   /**
    * Replaces the Driver's Table with a new Table, containing the drivers sorted in ascending order.
@@ -4927,11 +4714,11 @@ function MASidebarMod() {
   function sortDriversByDistance(eligibleDriversTbody, newTbody) {
     if (eligibleDriversTbody) {
       var sortedDriverDistances = [];
-      var eligibleDriversRows = eligibleDriversTbody.querySelectorAll('tr');
+      var eligibleDriversRows = eligibleDriversTbody.querySelectorAll("tr");
       var driverDistances = [];
 
       for (var i = 0; i < eligibleDriversRows.length; i++) {
-        driverDistances.push(+eligibleDriversRows[i].querySelectorAll("td:nth-child(2)")[0].innerHTML.split(' ')[0]);
+        driverDistances.push(+eligibleDriversRows[i].querySelectorAll("td:nth-child(2)")[0].innerHTML.split(" ")[0]);
       }
 
       sortedDriverDistances = driverDistances.slice().sort(function (a, b) {
@@ -4964,7 +4751,7 @@ function MASidebarMod() {
     for (var i = 1; i < opsActionsTr.length; i++) {
       var _opsActionsTr$i$getEl, _opsActionsTr$i$getEl2;
 
-      var currentTd = (_opsActionsTr$i$getEl = opsActionsTr[i].getElementsByTagName('td')[1]) === null || _opsActionsTr$i$getEl === void 0 ? void 0 : (_opsActionsTr$i$getEl2 = _opsActionsTr$i$getEl.innerHTML) === null || _opsActionsTr$i$getEl2 === void 0 ? void 0 : _opsActionsTr$i$getEl2.split(" ");
+      var currentTd = (_opsActionsTr$i$getEl = opsActionsTr[i].getElementsByTagName("td")[1]) === null || _opsActionsTr$i$getEl === void 0 ? void 0 : (_opsActionsTr$i$getEl2 = _opsActionsTr$i$getEl.innerHTML) === null || _opsActionsTr$i$getEl2 === void 0 ? void 0 : _opsActionsTr$i$getEl2.split(" ");
 
       if (currentTd[0] + " " + currentTd[1] === "Manual Assignment:" && currentTd[2] !== "Failed") {
         var driverId = currentTd[currentTd.length - 4];
@@ -5028,7 +4815,7 @@ function MASidebarMod() {
 function IntercomSlackConnection(items, chromeStorage) {
   /* Set initial values */
   var baseColor = "#dfecc9";
-  var chatColors = ['#BAF2E9', '#3381FF', '#F2BAC9', '#FAF0CA ', '#FFC0CB', '#B9FFB7'];
+  var chatColors = ["#BAF2E9", "#3381FF", "#F2BAC9", "#FAF0CA ", "#FFC0CB", "#B9FFB7"];
   var intercomToSlackMessages = ["We have contacted the client", "We contacted the client", "https://app.slack.com/client/", "Message sent to Just Eat in Slack!", "One moment please, we are going to confirm with the client", "Message sent to client via support-out-client", "Cancellation message sent to Slack!"];
   items.onGoingChats === undefined ? chromeStorage.local.set({
     onGoingChats: "1"
@@ -5038,7 +4825,7 @@ function IntercomSlackConnection(items, chromeStorage) {
   }) : null;
   /* Executes in Slack */
 
-  if (window.location.href.indexOf('slack') !== -1) {
+  if (window.location.href.indexOf("slack") !== -1) {
     /**
      * Goes through focused Slack tab, scans and colorises recent chats.
      *
@@ -5088,10 +4875,10 @@ function IntercomSlackConnection(items, chromeStorage) {
         });
       }
 
-      var searchedMessages = document.getElementsByClassName('c-search_message__body');
-      var channelMessages = document.getElementsByClassName('c-message_kit__text');
+      var searchedMessages = document.getElementsByClassName("c-search_message__body");
+      var channelMessages = document.getElementsByClassName("c-message_kit__text");
       var allMessages = channelMessages.length > 0 ? channelMessages : searchedMessages;
-      var manualChannelMessages = document.getElementsByClassName('p-rich_text_section');
+      var manualChannelMessages = document.getElementsByClassName("p-rich_text_section");
       var chatRefs = JSON.parse(items.chatRefs);
       var chatReferences = Object.keys(chatRefs);
       var chatRefsColors = Object.values(chatRefs).map(function (arr) {
@@ -5128,19 +4915,19 @@ function IntercomSlackConnection(items, chromeStorage) {
 
   var launcher = function launcher() {
     return setInterval(function () {
-      initialize('.nav__link__text__inbox-name', main);
+      initialize(".nav__link__text__inbox-name", main);
     }, 2000);
   };
 
   function main() {
-    var channels = $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+    var channels = $("div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)"); // Les liens a où se trouves les
 
     crawlChannelBoards(channels);
     getUserID();
   }
 
   function getChannelsBoards() {
-    return $('div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)'); // Les liens a où se trouves les
+    return $("div.submenu__sections__section__items__inner > div > div > div > span div.nav-vertical__link div[data-popover-opener] div a:not(.c__deemphasized-text)"); // Les liens a où se trouves les
   }
 
   function crawlChannelBoards(channels) {
@@ -5148,9 +4935,9 @@ function IntercomSlackConnection(items, chromeStorage) {
     var userID = getUserID;
     getUserID();
     channels.each(function (i, el) {
-      var channel_link = 'https://app.intercom.com/' + $(el).attr('href');
+      var channel_link = "https://app.intercom.com/" + $(el).attr("href");
       var channel_id = channel_link.match(/inbox\/inbox\/(\d{7}|view:486)/);
-      var channel_name = $(el).find('span.nav__link__text__inbox-name').text().trim();
+      var channel_name = $(el).find("span.nav__link__text__inbox-name").text().trim();
       var userID = getUserID();
       channelLists.push({
         channelName: channel_name,
@@ -5169,7 +4956,7 @@ function IntercomSlackConnection(items, chromeStorage) {
   }
 
   function getUserID() {
-    var linkAvatar = '' + $('a.nav__link__inbox-link')[0];
+    var linkAvatar = "" + $("a.nav__link__inbox-link")[0];
     var regex_avatar = /(\d{7})/;
     var userID = linkAvatar.match(regex_avatar)[0];
     return userID;
@@ -5188,7 +4975,7 @@ function IntercomSlackConnection(items, chromeStorage) {
 
   function storeConvInStorage(new_conv) {
     var forStorage = items.onGoingChats;
-    var all_conv = items.onGoingChats.toString().split(',');
+    var all_conv = items.onGoingChats.toString().split(",");
 
     if (!all_conv.includes(new_conv)) {
       all_conv.push(new_conv);
@@ -5211,7 +4998,7 @@ function IntercomSlackConnection(items, chromeStorage) {
 
   function anyPost() {
     var any_post = false;
-    $('.ember-view.conversation__stream .o__for-admin a').each(function (i, e) {
+    $(".ember-view.conversation__stream .o__for-admin a").each(function (i, e) {
       if (e.href.match(/admins\/(\d+)/)[1] == getUserID()) {
         any_post = true;
       }
@@ -5227,8 +5014,8 @@ function IntercomSlackConnection(items, chromeStorage) {
   }
 
   function getMyChats() {
-    var list_chats = $('.inbox__conversation-list-item a');
-    var stored_chats = items.onGoingChats.split(',');
+    var list_chats = $(".inbox__conversation-list-item a");
+    var stored_chats = items.onGoingChats.split(",");
     var chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
     var chatRefsChatIds = Object.values(chatRefs).map(function (arr) {
       return arr[0];
@@ -5244,8 +5031,8 @@ function IntercomSlackConnection(items, chromeStorage) {
         var regexCheck = "/conversations/" + chatRefsChatIds[j];
         var regex = new RegExp(regexCheck, "g");
 
-        if ($(currentChat).attr('href').match(regex) && stored_chats.indexOf($(currentChat).attr('href').match(/conversations\/(\d+)/)[1]) !== -1) {
-          $(currentChat).css('background-color', chatRefsColors[j]);
+        if ($(currentChat).attr("href").match(regex) && stored_chats.indexOf($(currentChat).attr("href").match(/conversations\/(\d+)/)[1]) !== -1) {
+          $(currentChat).css("background-color", chatRefsColors[j]);
         }
       }
     }
@@ -5257,7 +5044,7 @@ function IntercomSlackConnection(items, chromeStorage) {
     });
 
     function initialize_color() {
-      if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+      if (document != null && $(".inbox__conversation-list-item a").length > 0) {
         clearInterval(launcher2);
         main_2();
       } else {
@@ -5274,7 +5061,7 @@ function IntercomSlackConnection(items, chromeStorage) {
   }, 1000);
   $(document).ready(function (e) {
     function initialize_color() {
-      if (document != null && $('.inbox__conversation-list-item a').length > 0) {
+      if (document != null && $(".inbox__conversation-list-item a").length > 0) {
         clearInterval(launcher2);
         main_2();
       } else {
@@ -5301,13 +5088,13 @@ function IntercomSlackConnection(items, chromeStorage) {
 
     var chatRefs = JSON.parse(items.chatRefs !== undefined ? items.chatRefs : JSON.stringify({}));
     var counter = items.colorCounter;
-    var packageReference = (_document$querySelect = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Reference: ')[1]) === null || _document$querySelect === void 0 ? void 0 : (_document$querySelect2 = _document$querySelect.split(' ')[0]) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.split('<br>');
-    var deliveryRequest = (_document$querySelect3 = document.querySelectorAll(".o__admin-note")[0].innerHTML.split('Delivery Request: ')[1]) === null || _document$querySelect3 === void 0 ? void 0 : (_document$querySelect4 = _document$querySelect3.split(' ')[0]) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.split('<br>');
+    var packageReference = (_document$querySelect = document.querySelectorAll(".o__admin-note")[0].innerHTML.split("Reference: ")[1]) === null || _document$querySelect === void 0 ? void 0 : (_document$querySelect2 = _document$querySelect.split(" ")[0]) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.split("<br>");
+    var deliveryRequest = (_document$querySelect3 = document.querySelectorAll(".o__admin-note")[0].innerHTML.split("Delivery Request: ")[1]) === null || _document$querySelect3 === void 0 ? void 0 : (_document$querySelect4 = _document$querySelect3.split(" ")[0]) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.split("<br>");
     if (!packageReference && !deliveryRequest) return;
     packageReference = ((_packageReference = packageReference) === null || _packageReference === void 0 ? void 0 : _packageReference.length) > 0 ? packageReference[0] : null;
     deliveryRequest = ((_deliveryRequest = deliveryRequest) === null || _deliveryRequest === void 0 ? void 0 : _deliveryRequest.length) > 0 ? deliveryRequest[0] : null;
-    var openedChatInfo = document.getElementsByClassName('ember-view conversation__stream')[0];
-    var openedChatInfoMessages = openedChatInfo.getElementsByTagName('p');
+    var openedChatInfo = document.getElementsByClassName("ember-view conversation__stream")[0];
+    var openedChatInfoMessages = openedChatInfo.getElementsByTagName("p");
     var currentChatId = window.location.href.match(/conversations\/(\d+)/)[1];
     var chatReference;
 
@@ -5360,7 +5147,7 @@ function IntercomSlackConnection(items, chromeStorage) {
   }
 
   function resetValues() {
-    var specialistChatCount = +document.getElementsByClassName('submenu__sections__section__items__item__count')[0].innerHTML.trim();
+    var specialistChatCount = +document.getElementsByClassName("submenu__sections__section__items__item__count")[0].innerHTML.trim();
     if (specialistChatCount > 0) return;
     chromeStorage.local.set({
       chatRefs: JSON.stringify({})
@@ -5474,8 +5261,8 @@ function BOFilterPackages() {
   }
 
   function openInNewTab(href) {
-    Object.assign(document.createElement('a'), {
-      target: '_blank',
+    Object.assign(document.createElement("a"), {
+      target: "_blank",
       href: href
     }).click();
   }

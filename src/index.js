@@ -20,16 +20,6 @@ const scriptsInformation = [
     tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
   },
   {
-    title: "Fountain Improvements",
-    description: "Enlarges the driver's vehicle in BackOffice",
-    tags: [DEPARTMENTS.ADMIN],
-  },
-  {
-    title: "Magnify Fountain Images",
-    description: "Enlarges the driver's vehicle in BackOffice",
-    tags: [DEPARTMENTS.ADMIN],
-  },
-  {
     title: "Intercom to BackOffice Sidebar Link",
     description: "Enlarges the driver's vehicle in BackOffice",
     tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
@@ -70,23 +60,10 @@ window.Pontica = {
       ) {
         BOVehicleModification();
       }
-
-      if (
-        window.location.href.includes(
-          "https://www.fountain.com/stuart/applicant"
-        )
-      ) {
-        if (state[1]) {
-          FountainImprovements();
-        }
-
-        if (state[2]) {
-          MagnifyFountainImages();
-        }
-      }
+      
       if (
         window.location.href.includes("https://app.intercom.com/a/apps*") &&
-        state[3]
+        state[1]
       ) {
         IntercomToBO();
       }
@@ -94,14 +71,14 @@ window.Pontica = {
         window.location.href.includes(
           "https://backoffice.internal.stuart.com/admin/packages"
         ) &&
-        state[4]
+        state[2]
       ) {
         MASidebarMod();
       }
       if (
         (window.location.href.includes("https://app.slack.com/client") ||
           window.location.href.includes("https://app.intercom.com/a/apps")) &&
-        state[5]
+        state[3]
       ) {
         IntercomSlackConnection(items, chromeStorage);
       }
@@ -110,7 +87,7 @@ window.Pontica = {
         window.location.href.includes(
           "https://backoffice.internal.stuart.com/admin/packages"
         ) &&
-        state[6]
+        state[4]
       ) {
         BOFilterPackages();
       }
@@ -157,91 +134,6 @@ function BOVehicleModification() {
   }
 }
 
-function FountainImprovements() {
-  let interval = setInterval(main, 2000);
-  let hasCheckedIfRejected = false;
-
-  $(".js-applicants-search").on("submit", function () {
-    hasCheckedIfRejected = false;
-  });
-
-  function main() {
-    const transitionEventsDiv = $("#transition-events");
-
-    if (transitionEventsDiv.length > 0) {
-      transitionEventsDiv.css("display", "none");
-    }
-
-    let select = $("#funnel_id");
-    let moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
-
-    const userInfo = $(".obiq-table__cell > a")[1]?.innerHTML;
-
-    if (!userInfo) {
-      return;
-    }
-
-    const userPlaceVehicle = userInfo.split("/")[0];
-
-    if (isRejected() && !hasCheckedIfRejected) {
-      hasCheckedIfRejected = true;
-      alert("Rejected driver/Repeat offender/Offboarded");
-    }
-
-    if (moveToModal.css("display") === "block") {
-      const options = $("#funnel_id option");
-
-      options.each((i) => {
-        if (options[i].innerHTML === userPlaceVehicle) {
-          select.val(options[i].value);
-          clearInterval(interval);
-          restartMainInterval();
-          return false;
-        }
-      });
-    }
-
-    function restartMainInterval() {
-      let restartInterval = setInterval(() => {
-        let moveToModal = $("#batch-move-to-stage-modal"); // to identify whether the Move To modal is opened.
-
-        const footerCheckbox = document.querySelectorAll(
-          "#should_run_when_land"
-        );
-
-        if (footerCheckbox[1] && footerCheckbox[1].checked === true) {
-          footerCheckbox[1].click();
-        }
-
-        if (moveToModal.css("display") !== "block") {
-          interval = setInterval(main, 2000);
-          clearInterval(restartInterval);
-          hasCheckedIfRejected = false;
-        }
-      }, 1000);
-    }
-
-    function isRejected() {
-      const userInfo = $(".obiq-table__cell > a");
-
-      for (let i = 1; i < userInfo.length; i += 2) {
-        const userInfo = $(".obiq-table__cell > a")[i].innerHTML;
-        const userStatus = userInfo.split("/")[1];
-
-        if (
-          userStatus.indexOf("Rejected") >= 0 ||
-          userStatus.indexOf("Repeat Offenders") >= 0 ||
-          userStatus.indexOf("Offboarded") >= 0
-        ) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-  }
-}
-
 function IntercomToBO() {
   let userInfoBox;
   let qualityBox;
@@ -266,136 +158,6 @@ function IntercomToBO() {
       }
     }
   }, 2000);
-}
-
-function MagnifyFountainImages() {
-  const form = document.querySelectorAll(".js-applicants-search")[0];
-
-  let imageOpenContainer = document.createElement("div");
-  imageOpenContainer.style.width = "1000px";
-  imageOpenContainer.style.height = "100vh";
-  imageOpenContainer.style.position = "absolute";
-  imageOpenContainer.style.pointerEvents = "none";
-  imageOpenContainer.style.top = "0";
-  imageOpenContainer.style.left = "0";
-  imageOpenContainer.style.backgroundSize = "contain";
-  imageOpenContainer.style.backgroundRepeat = "no-repeat";
-  imageOpenContainer.style.zIndex = "999";
-  document.getElementsByTagName("body")[0].appendChild(imageOpenContainer);
-
-  let toggleSavedImagesBtn = document.createElement("button");
-  toggleSavedImagesBtn.style.position = "fixed";
-  toggleSavedImagesBtn.style.left = "30px";
-  toggleSavedImagesBtn.style.bottom = "60px";
-  toggleSavedImagesBtn.style.borderRadius = "5px";
-  toggleSavedImagesBtn.style.border = "none";
-  toggleSavedImagesBtn.innerHTML = "History";
-  toggleSavedImagesBtn.style.opacity = "0";
-  toggleSavedImagesBtn.style.pointerEvents = "none";
-  toggleSavedImagesBtn.style.zIndex = "999";
-  toggleSavedImagesBtn.style.padding = "5px 15px";
-  document.getElementsByTagName("body")[0].appendChild(toggleSavedImagesBtn);
-
-  let containerSavedImages = document.createElement("div");
-  containerSavedImages.style.position = "fixed";
-  containerSavedImages.style.left = "110px";
-  containerSavedImages.style.bottom = "100px";
-  containerSavedImages.style.border = "none";
-  containerSavedImages.style.opacity = "0";
-  containerSavedImages.style.pointerEvents = "none";
-  containerSavedImages.style.zIndex = "999";
-  containerSavedImages.style.transition = "opacity .3s";
-  document.getElementsByTagName("body")[0].appendChild(containerSavedImages);
-
-  toggleSavedImagesBtn.addEventListener("click", function () {
-    if (containerSavedImages.style.opacity === "1") {
-      containerSavedImages.style.opacity = "0";
-      containerSavedImages.style.pointerEvents = "none";
-      return;
-    }
-
-    containerSavedImages.style.opacity = "1";
-    containerSavedImages.style.pointerEvents = "all";
-  });
-
-  let savedImages;
-  let shouldSaveImages = true;
-
-  setInterval(function () {
-    const previewContainers = document.querySelectorAll(
-      ".applicant-profile-documents__item-preview-column"
-    );
-
-    if (!previewContainers || previewContainers.length === 0) {
-      return;
-    }
-
-    toggleSavedImagesBtn.style.opacity = "1";
-    toggleSavedImagesBtn.style.pointerEvents = "all";
-
-    for (let i = 0; i < previewContainers.length; i++) {
-      const container = previewContainers[i];
-      const actionLinkContainer = previewContainers[i].nextElementSibling;
-      let actionLink = actionLinkContainer.getElementsByTagName("a")[0];
-
-      if (shouldSaveImages) {
-        savedImages = document.createElement("div");
-        containerSavedImages.appendChild(savedImages);
-        let newLink = document.createElement("a");
-        let newLinkText = document.createTextNode(
-          container.parentNode.parentNode.firstChild.innerHTML
-        );
-        newLink.href = actionLink.href;
-        newLink.style.zIndex = "999";
-        newLink.classList.add("save-history-link");
-        newLink.appendChild(newLinkText);
-
-        savedImages.appendChild(newLink);
-      }
-
-      if (
-        actionLink.getAttribute("download").split(".")[
-          actionLink.getAttribute("download").split(".").length - 1
-        ] === "pdf"
-      ) {
-        continue;
-      }
-
-      let img = document.createElement("img");
-      img.style.width = "100%";
-      img.style.width = "100%";
-      img.src = actionLink.href;
-      img.onerror = "image_error";
-
-      container.addEventListener("mouseenter", function () {
-        imageOpenContainer.style.backgroundImage = "url('" + actionLink + "')";
-      });
-
-      container.addEventListener("mouseleave", function () {
-        imageOpenContainer.style.backgroundImage = "none";
-      });
-    }
-
-    if (shouldSaveImages) {
-      shouldSaveImages = false;
-      let links = document.getElementsByClassName("save-history-link");
-
-      if (links.length > 0) {
-        return;
-      }
-
-      containerSavedImages.appendChild(savedImages);
-    }
-
-    form.addEventListener("submit", function (e) {
-      shouldSaveImages = true;
-      let links = document.getElementsByClassName("save-history-link");
-
-      while (links.length > 0) {
-        links[0].remove();
-      }
-    });
-  }, 1000);
 }
 
 function MASidebarMod() {
