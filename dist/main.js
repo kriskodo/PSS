@@ -4588,7 +4588,7 @@ function IntercomToBO() {
 function MASidebarMod() {
   setTimeout(function () {
     return main();
-  }, 200);
+  }, 1000);
 
   function main() {
     var zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;
@@ -4628,13 +4628,13 @@ function MASidebarMod() {
       return;
     }
 
-    if (zone === "London") {
+    if (zone == "London") {
       assignSidebarH3.style.color = "red";
       assignSidebarH3.style.fontSize = "20px";
       assignSidebarH3.innerHTML = "LONDON PACKAGE";
     }
 
-    if (zone === "Leeds") {
+    if (zone == "Leeds") {
       assignSidebarH3.style.color = "orange";
       assignSidebarH3.style.fontSize = "20px";
       assignSidebarH3.innerHTML = "LEEDS PACKAGE";
@@ -4672,16 +4672,16 @@ function MASidebarMod() {
    * Checks if the package has a driver assigned already
    * @param {HTMLElement} assignSidebar
    * @param {HTMLElement} panelContentsSmall
-   * @returns {boolean} bool
+   * @returns {bool} bool
    */
 
 
   function hasAssigned(assignSidebar, panelContentsSmall) {
-    return assignSidebar !== undefined && panelContentsSmall !== undefined;
+    return assignSidebar && panelContentsSmall;
   }
   /**
    * Increase Sidebar Width
-   * @param assignSidebar
+   * @param {HTMLElement} sidebar
    * @param {HTMLElement} panelContentsSmall
    * @param {HTMLElement} privateReasonKeyClientRequest
    */
@@ -4742,8 +4742,8 @@ function MASidebarMod() {
       var _opsActionsTr$i$getEl, _opsActionsTr$i$getEl2, _opsActionsTr$i$getEl3, _opsActionsTr$i$getEl4, _opsActionsTr$i$getEl5;
 
       var currentId = (_opsActionsTr$i$getEl = opsActionsTr[i].getElementsByTagName('td')[5]) === null || _opsActionsTr$i$getEl === void 0 ? void 0 : (_opsActionsTr$i$getEl2 = _opsActionsTr$i$getEl.innerHTML) === null || _opsActionsTr$i$getEl2 === void 0 ? void 0 : _opsActionsTr$i$getEl2.split(" ")[3];
-      var currentStatus = (_opsActionsTr$i$getEl3 = opsActionsTr[i].getElementsByTagName('td')[5]) === null || _opsActionsTr$i$getEl3 === void 0 ? void 0 : (_opsActionsTr$i$getEl4 = _opsActionsTr$i$getEl3.innerHTML) === null || _opsActionsTr$i$getEl4 === void 0 ? void 0 : (_opsActionsTr$i$getEl5 = _opsActionsTr$i$getEl4.split(" ")[0]) === null || _opsActionsTr$i$getEl5 === void 0 ? void 0 : _opsActionsTr$i$getEl5.trim();
-      currentId && currentStatus === "Succeeded" ? result.push(currentId) : null;
+      var current = (_opsActionsTr$i$getEl3 = opsActionsTr[i].getElementsByTagName('td')[5]) === null || _opsActionsTr$i$getEl3 === void 0 ? void 0 : (_opsActionsTr$i$getEl4 = _opsActionsTr$i$getEl3.innerHTML) === null || _opsActionsTr$i$getEl4 === void 0 ? void 0 : (_opsActionsTr$i$getEl5 = _opsActionsTr$i$getEl4.split(" ")[0]) === null || _opsActionsTr$i$getEl5 === void 0 ? void 0 : _opsActionsTr$i$getEl5.trim();
+      currentId && current === "Succeeded" ? result.push(currentId) : null;
     }
 
     return result;
