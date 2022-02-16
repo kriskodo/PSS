@@ -149,7 +149,7 @@ function IntercomToBO() {
 }
 
 function MASidebarMod() {
-		setTimeout(() => main(), 1000);
+		setTimeout(() => main(), 200);
 		
 		function main() {
 				const zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;

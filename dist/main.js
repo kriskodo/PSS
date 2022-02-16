@@ -4588,7 +4588,7 @@ function IntercomToBO() {
 function MASidebarMod() {
   setTimeout(function () {
     return main();
-  }, 1000);
+  }, 200);
 
   function main() {
     var zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;
