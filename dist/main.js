@@ -4573,66 +4573,56 @@ function BOVehicleModification() {
 
 function IntercomToBO() {
   var userInfoBox;
-  var qualityBox;
+  var driverNameLink;
+  var driverName;
   setInterval(function () {
     userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
+    driverName = driverNameLink.querySelectorAll("span")[0].innerHTML;
 
     if (userInfoBox) {
-      var driverIdLink = userInfoBox.getElementsByTagName("a")[0];
+      var driverIdLink = userInfoBox.getElementsByTagName('a')[0];
       var driverId = driverIdLink.innerHTML;
       driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
     }
-
-    qualityBox = document.querySelectorAll(".attribute__qualification-list")[0];
-
-    if (qualityBox) {
-      var qualityBoxItems = qualityBox.getElementsByTagName("div");
-
-      for (var i = 0; i < qualityBoxItems.length; i++) {
-        qualityBoxItems[i].style.pointerEvents = "none";
-      }
-    }
-  }, 2000);
+  }, 500);
 }
 
 function MASidebarMod() {
   setTimeout(function () {
     return main();
-  }, 500);
+  }, 200);
 
   function main() {
-    var timezones = {
-      BG: "BG",
-      EN: "EN"
-    }; // Choose your PC's timezone: English(timezons.EN) or Bulgarian(timezones.BG) and replace it in the parentheses below. English by default.
-
-    sidebarHourToEnglishTime(timezones.BG);
     var zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;
-    var assignSidebar = document.getElementById("assign-a-driver_sidebar_section");
+    var assignSidebar = document.getElementById('assign-a-driver_sidebar_section');
+    sidebarHourToEnglishTime();
 
     if (!assignSidebar) {
       return;
     }
 
-    var assignSidebarH3 = assignSidebar.getElementsByTagName("h3")[0];
-    var panelContentsSmall = document.getElementsByClassName("panel_contents small")[0];
-    var invitationsTable = document.getElementsByClassName("panel_contents")[6];
-    var hasCurrentPending = invitationsTable.getElementsByClassName("status_tag pending").length > 0;
+    var assignSidebarH3 = assignSidebar.getElementsByTagName('h3')[0];
+    var privateReasonKeyClientRequest = document.getElementById('private_reason_key_no_supply');
+    var panelContentsSmall = document.getElementsByClassName('panel_contents small')[0];
+    var invitationsTable = document.getElementsByClassName('panel_contents')[5];
+    var hasCurrentPending = invitationsTable.getElementsByClassName('status_tag pending').length > 0;
     var eligibleDriversTbody = document.querySelectorAll("table.eligible-drivers > tbody")[0];
-    var newTbody = document.createElement("tbody");
-    var opsActionsDiv = document.getElementById("ops_actions");
-    var opsActionsTr = opsActionsDiv.getElementsByTagName("tr");
-    var selfAssignedDriversLinks = document.getElementsByClassName("panel_contents")[0].querySelectorAll("[href*='/admin/drivers']");
+    var newTbody = document.createElement('tbody');
+    var xpath = "//h3[text()='Actions']";
+    var assignHistoryHeader = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var opsActionsDiv = assignHistoryHeader.parentNode;
+    var opsActionsTr = opsActionsDiv.getElementsByTagName('tr');
+    var selfAssignedDriversLinks = document.getElementsByClassName('panel_contents')[0].querySelectorAll("[href*='/admin/drivers']");
     var selfAssignedDriversIds = [];
 
     for (var i = 0; i < selfAssignedDriversLinks.length; i++) {
-      var currentDriverData = selfAssignedDriversLinks[i].href.split("/");
+      var currentDriverData = selfAssignedDriversLinks[i].href.split('/');
       var currentDriverId = currentDriverData[currentDriverData.length - 1];
       selfAssignedDriversIds.push(currentDriverId);
     }
 
     if (hasCurrentPending) {
-      assignSidebar.innerHTML = "<h1>PENDING</h1>";
+      assignSidebar.innerHTML = '<h1>PENDING</h1>';
       return;
     }
 
@@ -4647,12 +4637,12 @@ function MASidebarMod() {
     }
 
     if (zone === "Leeds") {
-      assignSidebarH3.style.color = "green";
+      assignSidebarH3.style.color = "orange";
       assignSidebarH3.style.fontSize = "20px";
       assignSidebarH3.innerHTML = "LEEDS PACKAGE";
     }
 
-    increaseWidth(assignSidebar, panelContentsSmall);
+    increaseWidth(assignSidebar, panelContentsSmall, privateReasonKeyClientRequest);
     var sortedDriverDistances = sortDriversByDistance(eligibleDriversTbody, newTbody);
     var assignedDrivers = getPrevAssignedDrivers(opsActionsDiv, opsActionsTr);
     sortedDriverDistances.forEach(function (dist, i) {
@@ -4663,7 +4653,7 @@ function MASidebarMod() {
   function markIfAssigned(distance, index, assignedDrivers, newTbody, selfAssignedDriversIds) {
     var _newTbody$getElements;
 
-    var currentTd = (_newTbody$getElements = newTbody.getElementsByTagName("tr")[index]) === null || _newTbody$getElements === void 0 ? void 0 : _newTbody$getElements.querySelectorAll("td:nth-child(1)")[0];
+    var currentTd = (_newTbody$getElements = newTbody.getElementsByTagName('tr')[index]) === null || _newTbody$getElements === void 0 ? void 0 : _newTbody$getElements.querySelectorAll("td:nth-child(1)")[0];
 
     if (!currentTd) {
       return;
@@ -4672,36 +4662,38 @@ function MASidebarMod() {
     var currentDriverId = currentTd.innerHTML.split("<")[0];
 
     if (selfAssignedDriversIds.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML = "System invited driver" + currentDriverId + "already";
+      currentTd.innerHTML = 'System invited driver' + currentDriverId + 'already';
       return;
     }
 
     if (assignedDrivers.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML = "Already assigned." + currentDriverId;
+      currentTd.innerHTML = 'Already assigned.' + currentDriverId;
     }
   }
   /**
    * Checks if the package has a driver assigned already
    * @param {HTMLElement} assignSidebar
    * @param {HTMLElement} panelContentsSmall
-   * @returns {Boolean} bool
+   * @returns {boolean} bool
    */
 
 
   function hasAssigned(assignSidebar, panelContentsSmall) {
-    return assignSidebar !== null && panelContentsSmall !== null;
+    return assignSidebar !== undefined && panelContentsSmall !== undefined;
   }
   /**
    * Increase Sidebar Width
    * @param assignSidebar
    * @param {HTMLElement} panelContentsSmall
+   * @param {HTMLElement} privateReasonKeyClientRequest
    */
 
 
-  function increaseWidth(assignSidebar, panelContentsSmall) {
-    assignSidebar.style.width = "500px";
-    assignSidebar.style.marginLeft = "-210px";
-    panelContentsSmall.style.maxWidth = "500px";
+  function increaseWidth(assignSidebar, panelContentsSmall, privateReasonKeyClientRequest) {
+    assignSidebar.style.width = '500px';
+    assignSidebar.style.marginLeft = '-210px';
+    panelContentsSmall.style.maxWidth = '500px';
+    privateReasonKeyClientRequest.click();
   }
   /**
    * Replaces the Driver's Table with a new Table, containing the drivers sorted in ascending order.
@@ -4714,11 +4706,11 @@ function MASidebarMod() {
   function sortDriversByDistance(eligibleDriversTbody, newTbody) {
     if (eligibleDriversTbody) {
       var sortedDriverDistances = [];
-      var eligibleDriversRows = eligibleDriversTbody.querySelectorAll("tr");
+      var eligibleDriversRows = eligibleDriversTbody.querySelectorAll('tr');
       var driverDistances = [];
 
       for (var i = 0; i < eligibleDriversRows.length; i++) {
-        driverDistances.push(+eligibleDriversRows[i].querySelectorAll("td:nth-child(2)")[0].innerHTML.split(" ")[0]);
+        driverDistances.push(+eligibleDriversRows[i].querySelectorAll("td:nth-child(2)")[0].innerHTML.split(' ')[0]);
       }
 
       sortedDriverDistances = driverDistances.slice().sort(function (a, b) {
@@ -4749,26 +4741,17 @@ function MASidebarMod() {
     var result = [];
 
     for (var i = 1; i < opsActionsTr.length; i++) {
-      var _opsActionsTr$i$getEl, _opsActionsTr$i$getEl2;
+      var _opsActionsTr$i$getEl, _opsActionsTr$i$getEl2, _opsActionsTr$i$getEl3, _opsActionsTr$i$getEl4, _opsActionsTr$i$getEl5;
 
-      var currentTd = (_opsActionsTr$i$getEl = opsActionsTr[i].getElementsByTagName("td")[1]) === null || _opsActionsTr$i$getEl === void 0 ? void 0 : (_opsActionsTr$i$getEl2 = _opsActionsTr$i$getEl.innerHTML) === null || _opsActionsTr$i$getEl2 === void 0 ? void 0 : _opsActionsTr$i$getEl2.split(" ");
-
-      if (currentTd[0] + " " + currentTd[1] === "Manual Assignment:" && currentTd[2] !== "Failed") {
-        var driverId = currentTd[currentTd.length - 4];
-        result.push(driverId);
-      }
+      var currentId = (_opsActionsTr$i$getEl = opsActionsTr[i].getElementsByTagName('td')[5]) === null || _opsActionsTr$i$getEl === void 0 ? void 0 : (_opsActionsTr$i$getEl2 = _opsActionsTr$i$getEl.innerHTML) === null || _opsActionsTr$i$getEl2 === void 0 ? void 0 : _opsActionsTr$i$getEl2.split(" ")[3];
+      var currentStatus = (_opsActionsTr$i$getEl3 = opsActionsTr[i].getElementsByTagName('td')[5]) === null || _opsActionsTr$i$getEl3 === void 0 ? void 0 : (_opsActionsTr$i$getEl4 = _opsActionsTr$i$getEl3.innerHTML) === null || _opsActionsTr$i$getEl4 === void 0 ? void 0 : (_opsActionsTr$i$getEl5 = _opsActionsTr$i$getEl4.split(" ")[0]) === null || _opsActionsTr$i$getEl5 === void 0 ? void 0 : _opsActionsTr$i$getEl5.trim();
+      currentId && currentStatus === "Succeeded" ? result.push(currentId) : null;
     }
 
     return result;
   }
-  /**
-   * Gives indication of whether the package is scheduled for the future and if so, indicates with red, otherwise - green;
-   * @returns {Array<string>|null} result
-   * @param localTime
-   */
 
-
-  function sidebarHourToEnglishTime(localTime) {
+  function sidebarHourToEnglishTime() {
     var rowTiming = document.querySelectorAll(".row-timing")[0];
     var rowTimingTd = rowTiming.getElementsByTagName("td")[0];
     var date = rowTimingTd.innerHTML.split("/");
@@ -4778,10 +4761,10 @@ function MASidebarMod() {
     var orderDate = _libs_dayjs_min_js__WEBPACK_IMPORTED_MODULE_1___default()(orderYear + "-" + orderMonth + "-" + orderDay);
     var now = _libs_dayjs_min_js__WEBPACK_IMPORTED_MODULE_1___default()();
 
-    if (now.isBefore(orderDate, "day")) {
+    if (now.isBefore(orderDate)) {
       rowTimingTd.innerHTML = rowTimingTd.innerHTML + " Order for future date";
       rowTimingTd.style.color = "red";
-      return null;
+      return;
     }
 
     var datesRegex = /(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]?(:[0-5][0-9])?.?$/gi;
@@ -4798,14 +4781,15 @@ function MASidebarMod() {
     hour === 0 ? hour = "23" : hour--;
     var replacedStr = hour + ":" + minutes + " English Time";
     rowTimingTd.innerHTML = rowTimingTd.innerHTML.replace(stringToReplace, replacedStr);
-    var currentHour = localTime === "EN" ? new Date().getHours() : new Date().getHours() - 2;
+    var currentHour = new Date().getHours() - 2; // To english time
+
     var currentMinutes = new Date().getMinutes();
     var currentValue = currentHour * 60 * 60 + currentMinutes * 60;
     var dateValue = +hour * 60 * 60 + +minutes.substr(0, minutes.length - 1) * 60;
 
     if (currentValue - dateValue < 0) {
       rowTimingTd.style.color = "red";
-      return null;
+      return;
     }
 
     rowTimingTd.style.color = "green";

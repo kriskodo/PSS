@@ -136,160 +136,125 @@ function BOVehicleModification() {
 
 function IntercomToBO() {
   let userInfoBox;
-  let qualityBox;
-
-  setInterval(function () {
+  let driverNameLink;
+  let driverName;
+  
+  setInterval(function(){
     userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
-
-    if (userInfoBox) {
-      const driverIdLink = userInfoBox.getElementsByTagName("a")[0];
+    driverName = driverNameLink.querySelectorAll("span")[0].innerHTML;
+    
+    if(userInfoBox) {
+      const driverIdLink = userInfoBox.getElementsByTagName('a')[0];
       const driverId = driverIdLink.innerHTML;
-      driverIdLink.href =
-        "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
+      driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
     }
-
-    qualityBox = document.querySelectorAll(".attribute__qualification-list")[0];
-
-    if (qualityBox) {
-      const qualityBoxItems = qualityBox.getElementsByTagName("div");
-
-      for (let i = 0; i < qualityBoxItems.length; i++) {
-        qualityBoxItems[i].style.pointerEvents = "none";
-      }
-    }
-  }, 2000);
+  }, 500)
 }
 
 function MASidebarMod() {
-  setTimeout(() => main(), 500);
-
+  setTimeout(() => main(), 200);
+  
   function main() {
-    const timezones = {
-      BG: "BG",
-      EN: "EN",
-    };
-
-    // Choose your PC's timezone: English(timezons.EN) or Bulgarian(timezones.BG) and replace it in the parentheses below. English by default.
-    sidebarHourToEnglishTime(timezones.BG);
-
-    const zone = document.querySelectorAll("[href*='/admin/zones/']")[0]
-      .innerHTML;
-    const assignSidebar = document.getElementById(
-      "assign-a-driver_sidebar_section"
-    );
-
+    const zone = document.querySelectorAll("[href*='/admin/zones/']")[0].innerHTML;
+    const assignSidebar = document.getElementById('assign-a-driver_sidebar_section');
+    sidebarHourToEnglishTime();
+    
     if (!assignSidebar) {
       return;
     }
-
-    const assignSidebarH3 = assignSidebar.getElementsByTagName("h3")[0];
-    const panelContentsSmall = document.getElementsByClassName(
-      "panel_contents small"
-    )[0];
-    const invitationsTable =
-      document.getElementsByClassName("panel_contents")[6];
-    const hasCurrentPending =
-      invitationsTable.getElementsByClassName("status_tag pending").length > 0;
-    const eligibleDriversTbody = document.querySelectorAll(
-      "table.eligible-drivers > tbody"
-    )[0];
-    let newTbody = document.createElement("tbody");
-    const opsActionsDiv = document.getElementById("ops_actions");
-    const opsActionsTr = opsActionsDiv.getElementsByTagName("tr");
-    const selfAssignedDriversLinks = document
-      .getElementsByClassName("panel_contents")[0]
-      .querySelectorAll("[href*='/admin/drivers']");
+    
+    const assignSidebarH3 = assignSidebar.getElementsByTagName('h3')[0];
+    const privateReasonKeyClientRequest = document.getElementById('private_reason_key_no_supply');
+    const panelContentsSmall = document.getElementsByClassName('panel_contents small')[0];
+    const invitationsTable = document.getElementsByClassName('panel_contents')[5];
+    const hasCurrentPending = invitationsTable.getElementsByClassName('status_tag pending').length > 0;
+    const eligibleDriversTbody = document.querySelectorAll("table.eligible-drivers > tbody")[0];
+    let newTbody = document.createElement('tbody');
+    const xpath = "//h3[text()='Actions']";
+    const assignHistoryHeader = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    const opsActionsDiv = assignHistoryHeader.parentNode;
+    const opsActionsTr = opsActionsDiv.getElementsByTagName('tr');
+    const selfAssignedDriversLinks = document.getElementsByClassName('panel_contents')[0].querySelectorAll("[href*='/admin/drivers']");
     const selfAssignedDriversIds = [];
-
+    
     for (let i = 0; i < selfAssignedDriversLinks.length; i++) {
-      const currentDriverData = selfAssignedDriversLinks[i].href.split("/");
+      const currentDriverData = selfAssignedDriversLinks[i].href.split('/');
       const currentDriverId = currentDriverData[currentDriverData.length - 1];
       selfAssignedDriversIds.push(currentDriverId);
     }
-
+    
     if (hasCurrentPending) {
-      assignSidebar.innerHTML = "<h1>PENDING</h1>";
+      assignSidebar.innerHTML = '<h1>PENDING</h1>';
       return;
     }
-
+    
     if (!hasAssigned(assignSidebar, panelContentsSmall)) {
       return;
     }
-
+    
     if (zone === "London") {
       assignSidebarH3.style.color = "red";
       assignSidebarH3.style.fontSize = "20px";
       assignSidebarH3.innerHTML = "LONDON PACKAGE";
     }
-
     if (zone === "Leeds") {
-      assignSidebarH3.style.color = "green";
+      assignSidebarH3.style.color = "orange";
       assignSidebarH3.style.fontSize = "20px";
       assignSidebarH3.innerHTML = "LEEDS PACKAGE";
     }
-
-    increaseWidth(assignSidebar, panelContentsSmall);
-
-    let sortedDriverDistances = sortDriversByDistance(
-      eligibleDriversTbody,
-      newTbody
-    );
-
+    
+    increaseWidth(assignSidebar, panelContentsSmall, privateReasonKeyClientRequest);
+    
+    let sortedDriverDistances = sortDriversByDistance(eligibleDriversTbody, newTbody);
+    
     const assignedDrivers = getPrevAssignedDrivers(opsActionsDiv, opsActionsTr);
-
-    sortedDriverDistances.forEach((dist, i) =>
-      markIfAssigned(dist, i, assignedDrivers, newTbody, selfAssignedDriversIds)
-    );
+    
+    sortedDriverDistances
+        .forEach((dist, i) =>
+            markIfAssigned(dist, i, assignedDrivers, newTbody, selfAssignedDriversIds));
   }
-
-  function markIfAssigned(
-    distance,
-    index,
-    assignedDrivers,
-    newTbody,
-    selfAssignedDriversIds
-  ) {
-    const currentTd = newTbody
-      .getElementsByTagName("tr")
-      [index]?.querySelectorAll("td:nth-child(1)")[0];
+  
+  function markIfAssigned(distance, index, assignedDrivers, newTbody, selfAssignedDriversIds) {
+    const currentTd = newTbody.getElementsByTagName('tr')[index]?.querySelectorAll("td:nth-child(1)")[0];
     if (!currentTd) {
       return;
     }
-
+    
     const currentDriverId = currentTd.innerHTML.split("<")[0];
-
+    
     if (selfAssignedDriversIds.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML =
-        "System invited driver" + currentDriverId + "already";
+      currentTd.innerHTML = 'System invited driver' + currentDriverId + 'already';
       return;
     }
-
+    
     if (assignedDrivers.indexOf(currentDriverId) !== -1) {
-      currentTd.innerHTML = "Already assigned." + currentDriverId;
+      currentTd.innerHTML = 'Already assigned.' + currentDriverId;
     }
   }
-
+  
   /**
    * Checks if the package has a driver assigned already
    * @param {HTMLElement} assignSidebar
    * @param {HTMLElement} panelContentsSmall
-   * @returns {Boolean} bool
+   * @returns {boolean} bool
    */
   function hasAssigned(assignSidebar, panelContentsSmall) {
-    return assignSidebar !== null && panelContentsSmall !== null;
+    return assignSidebar !== undefined && panelContentsSmall !== undefined;
   }
-
+  
   /**
    * Increase Sidebar Width
    * @param assignSidebar
    * @param {HTMLElement} panelContentsSmall
+   * @param {HTMLElement} privateReasonKeyClientRequest
    */
-  function increaseWidth(assignSidebar, panelContentsSmall) {
-    assignSidebar.style.width = "500px";
-    assignSidebar.style.marginLeft = "-210px";
-    panelContentsSmall.style.maxWidth = "500px";
+  function increaseWidth(assignSidebar, panelContentsSmall, privateReasonKeyClientRequest) {
+    assignSidebar.style.width = '500px';
+    assignSidebar.style.marginLeft = '-210px';
+    panelContentsSmall.style.maxWidth = '500px';
+    privateReasonKeyClientRequest.click();
   }
-
+  
   /**
    * Replaces the Driver's Table with a new Table, containing the drivers sorted in ascending order.
    * @param {HTMLElement} eligibleDriversTbody
@@ -299,33 +264,29 @@ function MASidebarMod() {
   function sortDriversByDistance(eligibleDriversTbody, newTbody) {
     if (eligibleDriversTbody) {
       let sortedDriverDistances = [];
-      const eligibleDriversRows = eligibleDriversTbody.querySelectorAll("tr");
+      const eligibleDriversRows = eligibleDriversTbody.querySelectorAll('tr');
       const driverDistances = [];
-
+      
       for (let i = 0; i < eligibleDriversRows.length; i++) {
-        driverDistances.push(
-          +eligibleDriversRows[i]
-            .querySelectorAll("td:nth-child(2)")[0]
-            .innerHTML.split(" ")[0]
-        );
+        driverDistances.push(+eligibleDriversRows[i].querySelectorAll("td:nth-child(2)")[0].innerHTML.split(' ')[0]);
       }
-
+      
       sortedDriverDistances = driverDistances.slice().sort((a, b) => a - b);
-
+      
       for (let i = 0; i < sortedDriverDistances.length; i++) {
         const desiredValue = sortedDriverDistances[i];
         const indexInOldArr = driverDistances.indexOf(desiredValue);
-
+        
         const newTableRow = eligibleDriversRows[indexInOldArr];
         newTbody.appendChild(newTableRow);
       }
-
+      
       eligibleDriversTbody.parentNode.appendChild(newTbody);
       eligibleDriversTbody.parentNode.removeChild(eligibleDriversTbody);
       return sortedDriverDistances;
     }
   }
-
+  
   /**
    * Checks which drivers have already been assigned manually.
    * @returns {Array<string>} result
@@ -334,29 +295,17 @@ function MASidebarMod() {
    */
   function getPrevAssignedDrivers(opsActionsDiv, opsActionsTr) {
     const result = [];
-
+    
     for (let i = 1; i < opsActionsTr.length; i++) {
-      const currentTd = opsActionsTr[i]
-        .getElementsByTagName("td")[1]
-        ?.innerHTML?.split(" ");
-      if (
-        currentTd[0] + " " + currentTd[1] === "Manual Assignment:" &&
-        currentTd[2] !== "Failed"
-      ) {
-        const driverId = currentTd[currentTd.length - 4];
-        result.push(driverId);
-      }
+      const currentId = opsActionsTr[i].getElementsByTagName('td')[5]?.innerHTML?.split(" ")[3];
+      const currentStatus = opsActionsTr[i].getElementsByTagName('td')[5]?.innerHTML?.split(" ")[0]?.trim();
+      (currentId && currentStatus ==="Succeeded") ? result.push(currentId) : null;
     }
-
+    
     return result;
   }
-
-  /**
-   * Gives indication of whether the package is scheduled for the future and if so, indicates with red, otherwise - green;
-   * @returns {Array<string>|null} result
-   * @param localTime
-   */
-  function sidebarHourToEnglishTime(localTime) {
+  
+  function sidebarHourToEnglishTime() {
     const rowTiming = document.querySelectorAll(".row-timing")[0];
     let rowTimingTd = rowTiming.getElementsByTagName("td")[0];
     const date = rowTimingTd.innerHTML.split("/");
@@ -365,45 +314,40 @@ function MASidebarMod() {
     const orderYear = date[2].split("-")[0].trim();
     const orderDate = dayjs(orderYear + "-" + orderMonth + "-" + orderDay);
     const now = dayjs();
-
-    if (now.isBefore(orderDate, "day")) {
+    
+    if(now.isBefore(orderDate)) {
       rowTimingTd.innerHTML = rowTimingTd.innerHTML + " Order for future date";
       rowTimingTd.style.color = "red";
-      return null;
+      return;
     }
-
+    
     const datesRegex = /(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]?(:[0-5][0-9])?.?$/gi;
     const match = rowTimingTd.innerHTML.split("-")[1].match(datesRegex);
     let stringToReplace = match[0];
     let hour = stringToReplace.split(":")[0];
     let minutes = stringToReplace.split(":")[1];
     hour = +hour;
-
+    
     if (hour === 1) {
       hour = "00";
     }
-
-    hour === 0 ? (hour = "23") : hour--;
-
+    
+    hour === 0 ? hour = "23" : hour--;
+    
     let replacedStr = hour + ":" + minutes + " English Time";
-    rowTimingTd.innerHTML = rowTimingTd.innerHTML.replace(
-      stringToReplace,
-      replacedStr
-    );
-
-    const currentHour =
-      localTime === "EN" ? new Date().getHours() : new Date().getHours() - 2;
+    rowTimingTd.innerHTML = rowTimingTd.innerHTML.replace(stringToReplace, replacedStr);
+    
+    const currentHour = new Date().getHours() - 2; // To english time
     const currentMinutes = new Date().getMinutes();
-
+    
     const currentValue = currentHour * 60 * 60 + currentMinutes * 60;
-    const dateValue =
-      +hour * 60 * 60 + +minutes.substr(0, minutes.length - 1) * 60;
-
-    if (currentValue - dateValue < 0) {
+    const dateValue = +hour * 60 * 60 + +minutes.substr(0, minutes.length - 1) * 60;
+    
+    if(currentValue - dateValue < 0) {
       rowTimingTd.style.color = "red";
-      return null;
+      return;
     }
-
+    
     rowTimingTd.style.color = "green";
   }
 }
