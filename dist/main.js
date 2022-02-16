@@ -4494,19 +4494,19 @@ var scriptsInformation = [{
   tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
 }, {
   title: "Intercom to BackOffice Sidebar Link",
-  description: "Enlarges the driver's vehicle in BackOffice",
+  description: "The driver ID in Intercom sends you directly to the driver's profile in Back Office.",
   tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
 }, {
   title: "Manual Assignments BO Sidebar",
-  description: "Enlarges the driver's vehicle in BackOffice",
+  description: "Makes sidebar wider, smarter(detects if Pending, and if driver was assigned) and sorts drivers by distance",
   tags: [DEPARTMENTS.MA]
 }, {
   title: "Intercom to Slack Highlighting",
-  description: "Enlarges the driver's vehicle in BackOffice",
+  description: "Highlights Intercom chats which have threads in Slack in custom colors. If no thread, colors in light green.",
   tags: [DEPARTMENTS.CHATS]
 }, {
   title: "Back Office Filtering Packages",
-  description: "Filters packages",
+  description: "Creates deeper filtering for Back Office packages.",
   tags: [DEPARTMENTS.CHATS]
 }];
 window.Pontica = {

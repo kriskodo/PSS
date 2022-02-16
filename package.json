@@ -4,7 +4,7 @@
     "description": "My webpack project",
     "main": "index.js",
     "scripts": {
-        "build": "webpack --config webpack.config.js",
+        "build": "rm -rf ./dist && webpack --config webpack.config.js",
         "git": "git add . && git commit -m",
         "postgit": "git push"
     },
