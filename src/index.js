@@ -136,19 +136,16 @@ function BOVehicleModification() {
 
 function IntercomToBO() {
   let userInfoBox;
-  let driverNameLink;
-  let driverName;
   
   setInterval(function(){
-    userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
-    driverName = driverNameLink.querySelectorAll("span")[0].innerHTML;
-    
+    userInfoBox = document.querySelectorAll('.ds-new__card')[0];
     if(userInfoBox) {
-      const driverIdLink = userInfoBox.getElementsByTagName('a')[0];
+      const kvValue = userInfoBox.querySelectorAll('.kv__value')[0];
+      const driverIdLink = kvValue.getElementsByTagName('a')[0];
       const driverId = driverIdLink.innerHTML;
       driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
     }
-  }, 500)
+  }, 3000)
 }
 
 function MASidebarMod() {
