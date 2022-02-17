@@ -135,14 +135,12 @@ function BOVehicleModification() {
 }
 
 function IntercomToBO() {
-		console.log("in");
 		let userInfoBox;
 		let qualityBox;
 		
 		setInterval(function () {
 				userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
 				
-				console.log("before if");
 				if (userInfoBox) {
 						const driverIdLink = userInfoBox.getElementsByTagName('a')[0];
 						const driverId = driverIdLink.innerHTML;
