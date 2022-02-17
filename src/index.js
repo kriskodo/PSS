@@ -135,12 +135,14 @@ function BOVehicleModification() {
 }
 
 function IntercomToBO() {
+		console.log("in");
 		let userInfoBox;
 		let qualityBox;
 		
-		setInterval(function(){
+		setInterval(function () {
 				userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
 				
+				console.log("before if");
 				if (userInfoBox) {
 						const driverIdLink = userInfoBox.getElementsByTagName('a')[0];
 						const driverId = driverIdLink.innerHTML;
@@ -152,12 +154,12 @@ function IntercomToBO() {
 				if (qualityBox) {
 						const qualityBoxItems = qualityBox.getElementsByTagName("div");
 						
-						for(let i = 0; i < qualityBoxItems.length; i++) {
+						for (let i = 0; i < qualityBoxItems.length; i++) {
 								qualityBoxItems[i].style.pointerEvents = "none";
 						}
 				}
 				
-		}, 2000)
+		}, 2000);
 }
 
 function MASidebarMod() {
