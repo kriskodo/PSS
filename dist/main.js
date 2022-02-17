@@ -4522,7 +4522,7 @@ window.Pontica = {
         BOVehicleModification();
       }
 
-      if (window.location.href.includes("https://app.intercom.com/a/apps*") && state[1]) {
+      if (window.location.href.includes("https://app.intercom.com/a/apps") && state[1]) {
         IntercomToBO();
       }
 

@@ -62,7 +62,7 @@ window.Pontica = {
 						}
 						
 						if (
-								window.location.href.includes("https://app.intercom.com/a/apps*") &&
+								window.location.href.includes("https://app.intercom.com/a/apps") &&
 								state[1]
 						) {
 								IntercomToBO();
