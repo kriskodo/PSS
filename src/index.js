@@ -136,16 +136,28 @@ function BOVehicleModification() {
 
 function IntercomToBO() {
 		let userInfoBox;
+		let qualityBox;
 		
-		setInterval(function () {
-				userInfoBox = document.querySelectorAll('.ds-new__card')[0];
+		setInterval(function(){
+				userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
+				
 				if (userInfoBox) {
-						const kvValue = userInfoBox.querySelectorAll('.kv__value')[0];
-						const driverIdLink = kvValue.getElementsByTagName('a')[0];
+						const driverIdLink = userInfoBox.getElementsByTagName('a')[0];
 						const driverId = driverIdLink.innerHTML;
 						driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
 				}
-		}, 3000);
+				
+				qualityBox = document.querySelectorAll(".attribute__qualification-list")[0];
+				
+				if (qualityBox) {
+						const qualityBoxItems = qualityBox.getElementsByTagName("div");
+						
+						for(let i = 0; i < qualityBoxItems.length; i++) {
+								qualityBoxItems[i].style.pointerEvents = "none";
+						}
+				}
+				
+		}, 2000)
 }
 
 function MASidebarMod() {
