@@ -39,11 +39,6 @@ const scriptsInformation = [
 				description: "Creates deeper filtering for Back Office packages.",
 				tags: [DEPARTMENTS.CHATS],
 		},
-		{
-			title: "test",
-			description: "test.",
-			tags: [DEPARTMENTS.CHATS],
-		},
 ];
 
 window.Pontica = {
