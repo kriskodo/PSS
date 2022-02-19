@@ -39,6 +39,11 @@ const scriptsInformation = [
 				description: "Creates deeper filtering for Back Office packages.",
 				tags: [DEPARTMENTS.CHATS],
 		},
+		{
+			title: "Magnify Fountain Images + Rotation",
+			description: "Hover Download button to see image, use R to rotate",
+			tags: [DEPARTMENTS.ADMIN]
+		}
 ];
 
 window.Pontica = {
@@ -91,6 +96,15 @@ window.Pontica = {
 						) {
 								BOFilterPackages();
 						}
+
+						if (
+							window.location.href.includes(
+									"https://app.fountain.com/stuart/applicants?",
+							) &&
+							state[5]
+					) {
+							MagnifyFountainImages();
+					}
 				});
 		},
 };
@@ -903,4 +917,65 @@ function BOFilterPackages() {
 						href: href,
 				}).click();
 		}
+}
+
+function MagnifyFountainImages() {
+	let imageOpenContainer = document.createElement("div");
+    imageOpenContainer.style.width = "1000px";
+    imageOpenContainer.style.height = "100vh";
+    imageOpenContainer.style.position = "absolute";
+    imageOpenContainer.style.pointerEvents = "none";
+    imageOpenContainer.style.top = "0";
+    imageOpenContainer.style.left = "0";
+    imageOpenContainer.style.backgroundSize = "contain";
+    imageOpenContainer.style.backgroundRepeat = "no-repeat";
+    imageOpenContainer.style.zIndex = "999";
+    document.getElementsByTagName("body")[0].appendChild(imageOpenContainer);
+    let rotateCounter = 0;
+    let shouldRotate = false;
+
+    window.addEventListener("keydown", (e) => {
+        // letter R
+        if(e.keyCode === 82 && shouldRotate) {
+            if(rotateCounter == 270) {
+                rotateCounter = -90;
+                return;
+            }
+
+            rotateCounter += 90;
+
+            imageOpenContainer.style.transform = "rotate(" + rotateCounter + "deg)";
+        }
+    });
+
+    setInterval(() => {
+        const downloadBtns = document.querySelectorAll("a[href^='https://secure-data.fountain.com']");
+
+        for(let i = 0; i < downloadBtns.length; i++) {
+            const currentBtn = downloadBtns[i];
+
+            if(!currentBtn.classList.contains("hover-functionality-added")) {
+                let img = document.createElement("img");
+                img.style.width = "100%";
+                img.style.width = "100%";
+                img.src = currentBtn.href;
+                img.onerror = "image_error";
+
+                currentBtn.classList.add("hover-functionality-added");
+
+                currentBtn.addEventListener("mouseenter", function() {
+                    imageOpenContainer.style.backgroundImage = "url('" + img.src + "')";
+                    shouldRotate = true;
+                })
+
+                currentBtn.addEventListener("mouseleave", function() {
+                    imageOpenContainer.style.backgroundImage = "none";
+                    imageOpenContainer.style.transform = "rotate(0)";
+                    rotateCounter = 0;
+                    shouldRotate = false;
+                })
+            }
+
+        }
+    }, 2000);
 }
