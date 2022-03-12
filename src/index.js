@@ -43,12 +43,7 @@ const scriptsInformation = [
 			title: "Magnify Fountain Images + Rotation",
 			description: "Hover Download button to see image, use R to rotate",
 			tags: [DEPARTMENTS.ADMIN]
-		},
-		{
-			title: "test",
-			description: "test",
-			tags: [DEPARTMENTS.CHATS]
-		},
+		}
 ];
 
 window.Pontica = {
