@@ -10,41 +10,62 @@ const DEPARTMENTS = {
 		ADMIN: "ADMIN",
 };
 
-/**
- * The order matters. In case a script is being added, add to the end.
- */
-const scriptsInformation = [
-		{
-				title: "Enlarge BO Vehicle Type",
-				description: "Enlarges the driver's vehicle in BackOffice",
-				tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
-		},
-		{
-				title: "Intercom to BackOffice Sidebar Link",
-				description: "The driver ID in Intercom sends you directly to the driver's profile in Back Office.",
-				tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
-		},
-		{
-				title: "Manual Assignments BO Sidebar",
-				description: "Makes sidebar wider, smarter(detects if Pending, and if driver was assigned) and sorts drivers by distance",
-				tags: [DEPARTMENTS.MA],
-		},
-		{
-				title: "Intercom to Slack Highlighting",
-				description: "Highlights Intercom chats which have threads in Slack in custom colors. If no thread, colors in light green.",
-				tags: [DEPARTMENTS.CHATS],
-		},
-		{
-				title: "Back Office Filtering Packages",
-				description: "Creates deeper filtering for Back Office packages.",
-				tags: [DEPARTMENTS.CHATS],
-		},
-		{
-			title: "Magnify Fountain Images + Rotation",
-			description: "Hover Download button to see image, use R to rotate",
-			tags: [DEPARTMENTS.ADMIN]
-		}
-];
+export default scriptsInformation = [
+	{
+		id: 0,
+		title: "Enlarge BO Vehicle Type",
+		description: "Enlarges the driver's vehicle in BackOffice",
+		tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
+		urls: ["https://backoffice.internal.stuart.com/admin/drivers"],
+		state: false,
+		execute: BOVehicleModification,
+	},
+	{
+		id: 1,
+		title: "Intercom to BackOffice Sidebar Link",
+		description: "The driver ID in Intercom sends you directly to the driver's profile in Back Office.",
+		tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
+		urls: ["https://app.intercom.com/a/apps"],
+		state: false,
+		execute: IntercomToBO
+	},
+	{
+		id: 2,
+		title: "Manual Assignments BO Sidebar",
+		description: "Makes sidebar wider, smarter(detects if Pending, and if driver was assigned) and sorts drivers by distance",
+		tags: [DEPARTMENTS.MA],
+		urls: ["https://backoffice.internal.stuart.com/admin/packages"],
+		state: false,
+		execute: MASidebarMod
+	},
+	{
+		id: 3,
+		title: "Intercom to Slack Highlighting",
+		description: "Highlights Intercom chats which have threads in Slack in custom colors. If no thread, colors in light green.",
+		tags: [DEPARTMENTS.CHATS],
+		urls: ["https://app.slack.com/client", "https://app.intercom.com/a/apps"],
+		state: false,
+		execute: IntercomSlackConnection
+	},
+	{
+		id: 4,
+		title: "Back Office Filtering Packages",
+		description: "Creates deeper filtering for Back Office packages.",
+		tags: [DEPARTMENTS.CHATS],
+		urls: ["https://backoffice.internal.stuart.com/admin/packages"],
+		state: false,
+		execute: BOFilterPackages
+	},
+	{
+		id: 5,
+		title: "Magnify Fountain Images + Rotation",
+		description: "Hover Download button to see image, use R to rotate",
+		tags: [DEPARTMENTS.ADMIN],
+		urls: ["https://app.fountain.com/stuart/applicants?"],
+		state: false,
+		execute: MagnifyFountainImages
+	}
+]
 
 window.Pontica = {
 		scriptsInformation,

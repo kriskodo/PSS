@@ -4471,6 +4471,9 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _libs_jquery_3_6_0_min__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _libs_jquery_3_6_0_min__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_libs_jquery_3_6_0_min__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _libs_dayjs_min_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
@@ -4484,35 +4487,55 @@ var DEPARTMENTS = {
   MA: "MA",
   ADMIN: "ADMIN"
 };
-/**
- * The order matters. In case a script is being added, add to the end.
- */
-
-var scriptsInformation = [{
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (scriptsInformation = [{
+  id: 0,
   title: "Enlarge BO Vehicle Type",
   description: "Enlarges the driver's vehicle in BackOffice",
-  tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
+  tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
+  urls: ["https://backoffice.internal.stuart.com/admin/drivers"],
+  state: false,
+  execute: BOVehicleModification
 }, {
+  id: 1,
   title: "Intercom to BackOffice Sidebar Link",
   description: "The driver ID in Intercom sends you directly to the driver's profile in Back Office.",
-  tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
+  tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN],
+  urls: ["https://app.intercom.com/a/apps"],
+  state: false,
+  execute: IntercomToBO
 }, {
+  id: 2,
   title: "Manual Assignments BO Sidebar",
   description: "Makes sidebar wider, smarter(detects if Pending, and if driver was assigned) and sorts drivers by distance",
-  tags: [DEPARTMENTS.MA]
+  tags: [DEPARTMENTS.MA],
+  urls: ["https://backoffice.internal.stuart.com/admin/packages"],
+  state: false,
+  execute: MASidebarMod
 }, {
+  id: 3,
   title: "Intercom to Slack Highlighting",
   description: "Highlights Intercom chats which have threads in Slack in custom colors. If no thread, colors in light green.",
-  tags: [DEPARTMENTS.CHATS]
+  tags: [DEPARTMENTS.CHATS],
+  urls: ["https://app.slack.com/client", "https://app.intercom.com/a/apps"],
+  state: false,
+  execute: IntercomSlackConnection
 }, {
+  id: 4,
   title: "Back Office Filtering Packages",
   description: "Creates deeper filtering for Back Office packages.",
-  tags: [DEPARTMENTS.CHATS]
+  tags: [DEPARTMENTS.CHATS],
+  urls: ["https://backoffice.internal.stuart.com/admin/packages"],
+  state: false,
+  execute: BOFilterPackages
 }, {
+  id: 5,
   title: "Magnify Fountain Images + Rotation",
   description: "Hover Download button to see image, use R to rotate",
-  tags: [DEPARTMENTS.ADMIN]
-}];
+  tags: [DEPARTMENTS.ADMIN],
+  urls: ["https://app.fountain.com/stuart/applicants?"],
+  state: false,
+  execute: MagnifyFountainImages
+}]);
 window.Pontica = {
   scriptsInformation: scriptsInformation,
   exec: function exec(chromeStorage) {

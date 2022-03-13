@@ -4,11 +4,11 @@
     "description": "Pontica Extension API",
     "main": "index.js",
     "scripts": {
-        "prebuild": "npm version patch --force",
         "build": "rm -rf ./dist && webpack --config webpack.config.js",
         "git": "git add . && git commit -m",
         "postgit": "git push"
     },
+    "exports": "./dist/main.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kriskodo/PSS.git"
