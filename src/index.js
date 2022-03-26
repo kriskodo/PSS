@@ -1,5 +1,5 @@
-import jQuery from "../libs/jquery-3.6.0.min";
-import dayjs from "../libs/dayjs.min.js";
+import jQuery from "../libs/jquery-3.6.0";
+import dayjs from "../libs/dayjs.js";
 
 window.$ = jQuery;
 window.dayjs = dayjs;
