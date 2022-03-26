@@ -8,7 +8,7 @@
         "git": "git add . && git commit -m",
         "postgit": "git push"
     },
-    "exports": "./dist/main.js",
+    "exports": "./src/index.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kriskodo/PSS.git"
