@@ -4485,19 +4485,28 @@ var DEPARTMENTS = {
   ADMIN: "ADMIN"
 };
 /**
- * The order matters. In case a script is being added, add to the end.
+ * When adding a new script, add to the end of the scriptsInformation array, then add the if check in {window.Pontica.exec()} method.
+ * ------------------------------- 
+ * In the {window.Pontica.exec()} method the {if} checks use the scriptsInformation array in this way:
+ * state[x] = the object at index {x} in {scriptsInformation}
+ * -------------------------------
+ * The client modifies the state by toggling functionality on and off. These changes are saved in the local storage.
+ * With the help of unsafe string evaluation, the code in this project is running functions depending on the client's needs.
+ * -------------------------------
+ * The unsafe string evaluation is utilised, because the usage of Github as a CDN is a requirement for this project.
+ * The model can be changed if a proper CDN is used to fetch data, which can be pasred as JSON, since Github returns plain strings as a result of the Javascript Fetch Api.
  */
 
 var scriptsInformation = [{
-  title: "Enlarge BO Vehicle Type",
-  description: "Enlarges the driver's vehicle in BackOffice",
+  title: "BO Driver's Vehicle Type Modification",
+  description: "Enlarges and adds text to the driver's vehicle in BackOffice",
   tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
 }, {
   title: "Intercom to BackOffice Sidebar Link",
   description: "The driver ID in Intercom sends you directly to the driver's profile in Back Office.",
   tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
 }, {
-  title: "Manual Assignments BO Sidebar",
+  title: "MA Sidebar Mod",
   description: "Makes sidebar wider, smarter(detects if Pending, and if driver was assigned) and sorts drivers by distance",
   tags: [DEPARTMENTS.MA]
 }, {
@@ -4512,6 +4521,18 @@ var scriptsInformation = [{
   title: "Magnify Fountain Images + Rotation",
   description: "Hover Download button to see image, use R to rotate",
   tags: [DEPARTMENTS.ADMIN]
+}, {
+  title: "Jira fields to links",
+  description: "Creates shortcuts to open fountain and back office.",
+  tags: [DEPARTMENTS.ADMIN]
+}, {
+  title: "Jira(Offboarding) Links",
+  description: "Turns Delivery IDs and Courier Email data into links to BO, Fountain and Intercom.",
+  tags: [DEPARTMENTS.ADMIN]
+}, {
+  title: "Shrink Intercom Conversation Images",
+  description: "Images in an Intercom conversation appear smaller, which makes it easier to look through chats.",
+  tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
 }];
 window.Pontica = {
   scriptsInformation: scriptsInformation,
@@ -4545,11 +4566,33 @@ window.Pontica = {
       if (window.location.href.includes("https://app.fountain.com/stuart/applicants?") && state[5]) {
         MagnifyFountainImages();
       }
+
+      if (window.location.href.includes("https://stuart-team.atlassian.net/jira/") && state[6]) {
+        JiraFieldsToLinks();
+      }
+
+      if (window.location.href.includes("https://stuart-team.atlassian.net/jira/servicedesk/projects/CSPUK/queues/") && state[7]) {
+        JiraOffboardingLinks();
+      }
+
+      if (window.location.href.includes("https://app.intercom.com/a/apps/") && state[8]) {
+        ShrinkIntercomConversationImages();
+      }
     });
   }
 };
 
 function BOVehicleModification() {
+  // ==UserScript==
+  // @name BO Driver's Vehicle Type MOD
+  // @namespace http://tampermonkey.net/
+  // @version 0.1
+  // @description try to take over the world!
+  // @author You
+  // @match https://backoffice.internal.stuart.com/admin/drivers/*
+  // @icon https://www.google.com/s2/favicons?domain=stuart.com
+  // @grant none
+  // ==/UserScript==
   var rowVehicleType = document.getElementsByClassName("row-type")[0];
   var img = rowVehicleType.getElementsByTagName("img")[0];
   img.style.width = "50px";
@@ -4562,48 +4605,46 @@ function BOVehicleModification() {
   paragraph.style.marginLeft = "3px";
   paragraph.style.width = "50%";
   paragraph.style.display = "inline-block";
-
-  if (img.src === "https://backoffice.internal.stuart.com/assets/ic_marker_bike-e0b02ac69ce8020cfa02e31cf9954fdb5d304d009ba0de2d1a268716cfd68519.png") {
-    paragraph.innerHTML = "Bike";
-    imgParent.appendChild(paragraph);
-  }
-
-  if (img.src === "https://backoffice.internal.stuart.com/assets/ic_marker_motorbike-0044facd69a2d45b675726b7e6e069fd2badba6e2a05842dbc4bf957d6caed8c.png") {
-    paragraph.innerHTML = "Motorbike";
-    imgParent.appendChild(paragraph);
-  }
-
-  if (img.src === "https://backoffice.internal.stuart.com/assets/ic_marker_car-7a8d8d68ce6bdad7a16dd2dd70876ced3327656418b34e0765b907c2e8beee66.png") {
-    paragraph.innerHTML = "Car";
-    imgParent.appendChild(paragraph);
-  }
+  paragraph.innerHTML = img.title;
+  imgParent.appendChild(paragraph);
 }
 
 function IntercomToBO() {
+  // ==UserScript==
+  // @name         Interom Sidebar Driver Link -> Back Office
+  // @namespace    http://tampermonkey.net/
+  // @version      0.1
+  // @description  try to take over the world!
+  // @author       You
+  // @match        https://app.intercom.com/a/apps*
+  // @icon         https://www.google.com/s2/favicons?domain=intercom.com
+  // @grant        none
+  // ==/UserScript==
   var userInfoBox;
-  var qualityBox;
   setInterval(function () {
-    userInfoBox = document.querySelectorAll("[data-key='user_id']")[0];
+    userInfoBox = document.querySelectorAll('.ds-new__card')[0];
 
     if (userInfoBox) {
-      var driverIdLink = userInfoBox.getElementsByTagName('a')[0];
+      var kvValue = userInfoBox.querySelectorAll('.kv__value')[0];
+      var driverIdLink = kvValue.getElementsByTagName('a')[0];
       var driverId = driverIdLink.innerHTML;
       driverIdLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
     }
-
-    qualityBox = document.querySelectorAll(".attribute__qualification-list")[0];
-
-    if (qualityBox) {
-      var qualityBoxItems = qualityBox.getElementsByTagName("div");
-
-      for (var i = 0; i < qualityBoxItems.length; i++) {
-        qualityBoxItems[i].style.pointerEvents = "none";
-      }
-    }
-  }, 2000);
+  }, 3000);
 }
 
 function MASidebarMod() {
+  // ==UserScript==
+  // @name         MA_Sidebar_Mod
+  // @namespace    http://tampermonkey.net/
+  // @version      0.1
+  // @description  try to take over the world!
+  // @author       You
+  // @match        https://backoffice.internal.stuart.com/admin/packages/*
+  // @icon         https://www.google.com/s2/favicons?sz=64&domain=fountain.com
+  // @require      https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.2/dayjs.min.js
+  // @grant        none
+  // ==/UserScript==
   setTimeout(function () {
     return main();
   }, 200);
@@ -5321,6 +5362,131 @@ function MagnifyFountainImages() {
         })();
       }
     }
+  }, 2000);
+}
+
+function JiraFieldsToLinks() {
+  var hasPassed = false;
+  var oldUrl = "";
+  setInterval(function () {
+    var emailField = document.querySelector("h1[data-test-id*='foundation.summary.heading']");
+    var idField;
+
+    if (window.location.href !== oldUrl || !document.querySelector("div.custom-made-wrapper")) {
+      hasPassed = false;
+    }
+
+    if (emailField && !hasPassed) {
+      var _document$evaluate;
+
+      idField = (_document$evaluate = document.evaluate("//h2[text()='Driver ID']", document, null, XPathResult.ANY_TYPE, null)) === null || _document$evaluate === void 0 ? void 0 : _document$evaluate.iterateNext();
+    }
+
+    if (emailField && idField) {
+      var emailLink = document.createElement("a");
+      var idLink = document.createElement("a");
+      var actualDriverID = idField.parentNode.parentNode.children.item(1).innerText.split(",").join("");
+      emailLink.innerHTML = emailField.innerText;
+      emailLink.target = "_blank";
+      emailLink.href = "https://www.fountain.com/stuart/applicants?utf8=%E2%9C%93&query=" + emailField.innerText;
+      emailLink.style.marginBottom = "8px";
+      idLink.innerHTML = actualDriverID;
+      idLink.target = "_blank";
+      idLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + actualDriverID;
+      var wrapper = document.createElement("div");
+      wrapper.classList.add("custom-made-wrapper");
+      wrapper.style.display = "flex";
+      wrapper.style.justifyContent = "center";
+      wrapper.style.alignItems = "center";
+      wrapper.style.flexDirection = "column";
+      wrapper.style.width = "50%";
+      wrapper.appendChild(emailLink);
+      wrapper.appendChild(idLink);
+      emailField.parentNode.appendChild(wrapper);
+      hasPassed = true;
+      oldUrl = window.location.href;
+    }
+  }, 1500);
+}
+
+function JiraOffboardingLinks() {
+  var i = setInterval(main, 1000);
+
+  function main() {
+    var deliveryIdsH2 = null;
+    document.querySelectorAll("h2").forEach(function (h) {
+      h.textContent.includes("Delivery IDs") ? deliveryIdsH2 = h : null;
+    });
+
+    if (deliveryIdsH2 !== null) {
+      var deliveryIdsH2Parent = deliveryIdsH2.parentNode.parentNode;
+      var deliveryIdsDiv = deliveryIdsH2Parent.querySelectorAll("[data-test-id]")[0];
+
+      if (!deliveryIdsDiv) {
+        clearInterval(i);
+        return;
+      }
+
+      var deliveryIdsArray = deliveryIdsDiv.innerHTML.split("\t");
+      deliveryIdsArray.map(function (id) {
+        return id.trim();
+      });
+      var deliveryIdsDivParent = deliveryIdsDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+      deliveryIdsDivParent.innerHTML = "";
+      deliveryIdsArray.forEach(function (id) {
+        deliveryIdsDivParent.innerHTML += "<a target='_blank' href='https://backoffice.internal.stuart.com/admin/pooling_deliveries/" + id + "'>" + id + "</a> ";
+      });
+      var courierEmailH2 = null;
+      document.querySelectorAll("h2").forEach(function (h) {
+        h.textContent.includes("Courier Email") ? courierEmailH2 = h : null;
+      });
+      var courierMailH2Parent = courierEmailH2.parentNode.parentNode;
+      var courierMailDiv = courierMailH2Parent.querySelectorAll("[data-test-id]")[0];
+      var courierMailText = courierMailDiv.textContent.trim();
+
+      if (!courierMailDiv) {
+        clearInterval(i);
+        return;
+      } //https://app.intercom.com/a/apps/fvhi1eat/inbox/inbox/search?q=umar_bajwa4u%40yahoo.com&teamAssigneeIdentifier=all&teammateAssigneeIdentifier=all
+
+
+      var courierMailDivParent = courierMailDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+      courierMailDivParent.innerHTML = "Fountain: <a target='_blank' href='https://app.fountain.com/stuart/applicants?page=1&per_page=20&query=" + courierMailText + "'>" + courierMailText + "</a>";
+      courierMailDivParent.innerHTML += "Intercom: <a target='_blank' href='https://app.intercom.com/a/apps/fvhi1eat/inbox/inbox/search?q=" + courierMailText + "&teamAssigneeIdentifier=all&teammateAssigneeIdentifier=all='>" + courierMailText + "</a> ";
+      var driverIDH1Text = document.querySelectorAll("h1")[0].textContent.trim();
+      courierMailDivParent.innerHTML += "BO: <a target='_blank' href='https://backoffice.internal.stuart.com/admin/drivers/" + driverIDH1Text + "'>" + driverIDH1Text + "</a> ";
+      clearInterval(i);
+    }
+  } // Detect url chnages in a SPA app
+
+
+  var lastUrl = location.href;
+  new MutationObserver(function () {
+    var url = location.href;
+
+    if (url !== lastUrl) {
+      lastUrl = url;
+      onUrlChange();
+    }
+  }).observe(document, {
+    subtree: true,
+    childList: true
+  });
+
+  function onUrlChange() {
+    clearInterval(i);
+
+    if (window.location.href.includes("https://stuart-team.atlassian.net/jira/servicedesk/projects/CSPUK/queues/")) {
+      i = setInterval(main, 1000);
+    }
+  }
+}
+
+function ShrinkIntercomConversationImages() {
+  setInterval(function () {
+    document.querySelectorAll(".conversation__bubble-container img").forEach(function (img) {
+      return img ? img.style.height = "400px" : null;
+    });
   }, 2000);
 }
 })();
