@@ -67,7 +67,12 @@ const scriptsInformation = [
 		title: "Shrink Intercom Conversation Images",
 		description: "Images in an Intercom conversation appear smaller, which makes it easier to look through chats.",
 		tags: [DEPARTMENTS.CHATS, DEPARTMENTS.ADMIN]
-	}
+	},
+  {
+		title: "RTW Jira Links",
+    description: "BO and Fountain links for RTW Jira cases",
+    tags: [DEPARTMENTS.ADMIN]
+  }
 ];
 
 window.Pontica = {
@@ -153,6 +158,14 @@ window.Pontica = {
 			) {
 				ShrinkIntercomConversationImages();
 			}
+				if (
+						window.location.href.includes(
+								"https://stuart-team.atlassian.net/jira/servicedesk/projects/CSPUK/queues/custom/"
+						) &&
+						state[9]
+				) {
+						RTWJiraLinks();
+				}
 		});
 	},
 };
@@ -1153,4 +1166,59 @@ function ShrinkIntercomConversationImages() {
 	setInterval(() => {
         document.querySelectorAll(".conversation__bubble-container img").forEach(img => img ? img.style.height = "400px" : null);
     }, 2000)
+}
+
+function RTWJiraLinks() {
+// ==UserScript==
+// @name         RTW Jira Links
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://stuart-team.atlassian.net/jira/servicedesk/projects/CSPUK/queues/custom/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
+// @grant        none
+// ==/UserScript==
+		let hasPassed = false;
+		let oldUrl = "";
+		
+		setInterval(() => {
+				let headerField = document.querySelector("h1[data-test-id='issue.views.issue-base.foundation.summary.heading']");
+				
+				if (window.location.href !== oldUrl || !headerField) {
+						hasPassed = false;
+				}
+				
+				if(headerField && !hasPassed) {
+						const headerText = headerField.innerText;
+						const driverId = headerText.match(/\d{6}/g)[0];
+						const email = headerText.match(/\w+@\w+.\w+/g)[0];
+						
+						const fountainLink = document.createElement("a");
+						const BOLink = document.createElement("a");
+						
+						fountainLink.innerHTML = email;
+						fountainLink.target = "_blank";
+						fountainLink.href = "https://www.fountain.com/stuart/applicants?utf8=%E2%9C%93&query=" + email;
+						
+						BOLink.innerHTML = driverId;
+						BOLink.target = "_blank";
+						BOLink.href = "https://backoffice.internal.stuart.com/admin/drivers/" + driverId;
+						
+						const wrapper = document.createElement("div");
+						wrapper.classList.add("custom-made-wrapper");
+						wrapper.style.display = "flex";
+						wrapper.style.justifyContent = "center";
+						wrapper.style.alignItems = "center";
+						wrapper.style.flexDirection = "column";
+						wrapper.style.width = "50%";
+						
+						wrapper.appendChild(fountainLink);
+						wrapper.appendChild(BOLink);
+						
+						headerField.parentNode.appendChild(wrapper);
+						hasPassed = true;
+						oldUrl = window.location.href;
+				}
+		}, 1000)
 }
